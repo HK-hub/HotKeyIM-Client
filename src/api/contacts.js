@@ -17,7 +17,7 @@ export const ServeEditContactRemark = data => {
 
 // 搜索联系人
 export const ServeSearchContact = data => {
-    return get('/admin/find/friend/account', data)
+    return post('/admin/find/friend/account', data)
 }
 
 // 好友申请服务接口
@@ -46,5 +46,8 @@ export const ServeFindFriendApplyNum = data => {
 
 // 搜索用户信息服务接口
 export const ServeSearchUser = data => {
-    return get('/api/v1/contact/detail', data)
+    return post('/admin/find/friend/account', data)
 }
+
+
+
