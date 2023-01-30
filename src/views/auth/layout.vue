@@ -8,7 +8,7 @@
   </section>
 
   <div class="copyright">
-    <span>©2020 - 2022 Lumen IM 在线聊天</span>
+    <span>©2022 - 2023 HotKey IM 在线聊天</span>
     <span><a href="http://beian.miit.gov.cn" target="_blank">黔ICP备20006767号</a></span>
     <span>Github源码</span>
   </div>

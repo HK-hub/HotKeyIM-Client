@@ -1,85 +1,96 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { NDivider, NForm, NFormItem } from 'naive-ui'
-import { ServeLogin } from '@/api/auth'
-import { setAccessToken } from '@/utils/auth'
-import { palyMusic } from '@/utils/talk'
-import socket from '@/socket'
-import { useUserStore } from '@/store/user'
+import { reactive, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { NDivider, NForm, NFormItem } from "naive-ui";
+import { ServeLogin } from "@/api/auth";
+import { setAccessToken } from "@/utils/auth";
+import { palyMusic } from "@/utils/talk";
+import socket from "@/socket";
+import { useUserStore } from "@/store/user";
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
-const route = useRoute()
-const router = useRouter()
-const formRef = ref(null)
+const route = useRoute();
+const router = useRouter();
+const formRef = ref(null);
 const rules = {
   username: {
     required: true,
-    trigger: ['blur', 'input'],
-    message: '账号不能为空',
+    trigger: ["blur", "input"],
+    message: "账号不能为空",
   },
   password: {
     required: true,
-    trigger: ['blur', 'input'],
-    message: '密码不能为空',
+    trigger: ["blur", "input"],
+    message: "密码不能为空",
   },
-}
+};
 
 const model = reactive({
-  username: '',
-  password: '',
+  username: "",
+  password: "",
   loading: false,
-})
+});
 
 const onLogin = () => {
-  model.loading = true
+  model.loading = true;
 
   const response = ServeLogin({
-    mobile: model.username,
+    // 账号密码体系
+    type: 0,
+    account: model.username,
     password: model.password,
-    platform: 'web',
-  })
+    nickname: null,
+    phone: model.username,
+    email: model.username,
+    code: null,
+    platform: "web",
+  });
 
-  response.then(res => {
-    if (res.code == 200) {
-      $message.success('登录成功！')
-      setAccessToken(res.data.access_token, res.data.expires_in)
-      socket.connect()
-      userStore.loadSetting()
-      router.push(route.query.redirect || '/')
+  response.then((res) => {
+    if (res.success) {
+      $message.success("登录成功！");
+      console.log(res);
+      // 设置token
+      setAccessToken(res.data.accessToken, res.data.expiresIn);
+      // 连接websocket
+      socket.connect();
+      // 获取用户信息
+      console.log(res.data.id);
+      userStore.loadSetting( '' + res.data.id);
+      router.push(route.query.redirect || "/");
     } else {
-      $message.warning(res.message)
+      $message.warning(res.message);
     }
-  })
+  });
 
   response.finally(() => {
-    model.loading = false
-  })
-}
+    model.loading = false;
+  });
+};
 
-const onValidate = e => {
-  e.preventDefault()
+const onValidate = (e) => {
+  e.preventDefault();
 
   // 谷歌浏览器提示音需要用户主动交互才能播放，登录入口主动交互一次，后面消息提示音就能正常播放了
-  palyMusic(true)
+  palyMusic(true);
 
-  formRef.value.validate(errors => {
-    !errors && onLogin()
-  })
-}
+  formRef.value.validate((errors) => {
+    !errors && onLogin();
+  });
+};
 
-const onClickAccount = type => {
+const onClickAccount = (type) => {
   if (type == 1) {
-    model.username = '18798272054'
-    model.password = 'admin123'
+    model.username = "3161880795@qq.com";
+    model.password = "123456";
   } else {
-    model.username = '18798272055'
-    model.password = 'admin123'
+    model.username = "18798272055";
+    model.password = "admin123";
   }
 
-  onLogin()
-}
+  onLogin();
+};
 </script>
 
 <template>
@@ -90,9 +101,9 @@ const onClickAccount = type => {
       <n-form ref="formRef" size="large" :model="model" :rules="rules">
         <n-form-item path="username" :show-label="false">
           <n-input
-            placeholder="请输入手机号"
+            placeholder="账号或邮箱或手机号"
             v-model:value="model.username"
-            :maxlength="11"
+            :maxlength="32"
             @keydown.enter.native="onValidate"
           />
         </n-form-item>
@@ -135,7 +146,7 @@ const onClickAccount = type => {
         <span style="color: #ccc; font-weight: 300"> 预览账号</span>
       </n-divider>
       <div class="preview-account">
-        <p @click="onClickAccount(1)">预览账号:18798272054 / 密码: admin123</p>
+        <p @click="onClickAccount(1)">预览账号:3161880795@qq.com / 密码: 123456</p>
         <p @click="onClickAccount(2)">预览账号:18798272055 / 密码: admin123</p>
       </div>
     </footer>
@@ -143,5 +154,5 @@ const onClickAccount = type => {
 </template>
 
 <style lang="less" scoped>
-@import '@/assets/css/login.less';
+@import "@/assets/css/login.less";
 </style>

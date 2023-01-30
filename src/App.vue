@@ -17,6 +17,7 @@ import MessageApi from '@/components/common/MessageApi.vue'
 import DialogApi from '@/components/common/DialogApi.vue'
 import { isLoggedIn } from '@/utils/auth'
 import { applyNotificationAuth } from '@/utils/notification'
+import { storage } from './utils/storage'
 
 const notifyStore = useNotifyStore()
 const userStore = useUserStore()
@@ -24,7 +25,8 @@ const useTalk = useTalkStore()
 
 if (isLoggedIn()) {
   socket.connect()
-  userStore.loadSetting()
+  console.log('userId=', storage.get('userId'));
+  userStore.loadSetting(storage.get('userId'))
 }
 
 applyNotificationAuth(value => {
@@ -35,7 +37,7 @@ applyNotificationAuth(value => {
 setTimeout(() => {
   window.$notification.create({
     title: '友情提示',
-    content: '此站点仅供演示、学习所用，请勿进行非法操作、上传或发布违法资讯。',
+    content: '感谢有你，生活不在孤单，感谢有你，距离不在遥远感',
     duration: 30000,
   })
 }, 3000)

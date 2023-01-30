@@ -1,76 +1,74 @@
 {
-  "name": "Lumen-IM",
-  "private": true,
-  "version": "0.0.0",
-  "main": "electron/main.js",
-  "scripts": {
-    "dev": "vite --mode development",
-    "build": "vite build",
-    "preview": "vite preview",
-    "electron": "wait-on tcp:3000 && cross-env NODE_ENV=development PROT=3000 electron .",
-    "electron:dev": "concurrently -k \"npm run dev\" \"npm run electron\"",
-    "electron:build": "vite build --mode electron && electron-builder --mac && electron-builder --win --x64"
-  },
-  "dependencies": {
-    "@highlightjs/vue-plugin": "^2.1.0",
-    "@kangc/v-md-editor": "^2.3.15",
-    "axios": "^0.26.0",
-    "highlight.js": "^11.5.0",
-    "js-audio-recorder": "^1.0.7",
-    "pinia": "^2.0.13",
-    "vue": "^3.2.25",
-    "vue-cropper": "^1.0.2",
-    "vue-router": "^4.0.12"
-  },
-  "devDependencies": {
-    "@vicons/ionicons4": "^0.12.0",
-    "@vicons/ionicons5": "^0.12.0",
-    "@vitejs/plugin-vue": "^2.2.0",
-    "@vitejs/plugin-vue-jsx": "^1.3.7",
-    "concurrently": "^7.3.0",
-    "cross-env": "^7.0.3",
-    "electron": "^19.0.9",
-    "electron-builder": "^23.1.0",
-    "less": "^4.1.2",
-    "less-loader": "^10.2.0",
-    "naive-ui": "^2.33.3",
-    "vite": "^2.8.0",
-    "vite-plugin-compression": "^0.5.1",
-    "wait-on": "^6.0.1"
-  },
-  "build": {
-    "appId": "com.gzydong.Lumen-IM",
-    "productName": "Lumen IM",
-    "copyright": "Copyright © 2022 Lumen IM",
-    "mac": {
-      "category": "public.app-category.utilities",
-      "icon": "build/icons/lumen-im-mac.png"
+    "name": "HotKey IM",
+    "private": true,
+    "version": "0.0.0",
+    "main": "electron/main.js",
+    "scripts": {
+        "dev": "vite --mode development",
+        "build": "vite build",
+        "preview": "vite preview",
+        "electron": "wait-on tcp:3000 && cross-env NODE_ENV=development PROT=3000 electron .",
+        "electron:dev": "concurrently -k \"npm run dev\" \"npm run electron\"",
+        "electron:build": "vite build --mode electron && electron-builder --mac && electron-builder --win --x64"
     },
-    "win": {
-      "icon": "build/icons/lumen-im-mac.png",
-      "target": [
-        {
-          "target": "nsis"
+    "dependencies": {
+        "@highlightjs/vue-plugin": "^2.1.0",
+        "@kangc/v-md-editor": "^2.3.15",
+        "axios": "^0.26.0",
+        "highlight.js": "^11.5.0",
+        "js-audio-recorder": "^1.0.7",
+        "pinia": "^2.0.13",
+        "vue": "^3.2.25",
+        "vue-cropper": "^1.0.2",
+        "vue-router": "^4.0.12"
+    },
+    "devDependencies": {
+        "@vicons/ionicons4": "^0.12.0",
+        "@vicons/ionicons5": "^0.12.0",
+        "@vitejs/plugin-vue": "^2.2.0",
+        "@vitejs/plugin-vue-jsx": "^1.3.7",
+        "concurrently": "^7.3.0",
+        "cross-env": "^7.0.3",
+        "electron": "^19.0.9",
+        "electron-builder": "^23.1.0",
+        "less": "^4.1.2",
+        "less-loader": "^10.2.0",
+        "naive-ui": "^2.33.3",
+        "vite": "^2.8.0",
+        "vite-plugin-compression": "^0.5.1",
+        "wait-on": "^6.0.1"
+    },
+    "build": {
+        "appId": "com.gzydong.Lumen-IM",
+        "productName": "Lumen IM",
+        "copyright": "Copyright © 2022 Lumen IM",
+        "mac": {
+            "category": "public.app-category.utilities",
+            "icon": "build/icons/lumen-im-mac.png"
+        },
+        "win": {
+            "icon": "build/icons/lumen-im-mac.png",
+            "target": [{
+                "target": "nsis"
+            }]
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "installerIcon": "build/icons/lumen-im-win.ico",
+            "uninstallerIcon": "build/icons/lumen-im-win.ico",
+            "installerHeaderIcon": "build/icons/lumen-im-win.ico",
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "lumeim-icon"
+        },
+        "files": [
+            "dist/**/*",
+            "electron/**/*"
+        ],
+        "directories": {
+            "buildResources": "assets",
+            "output": "dist_electron"
         }
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "installerIcon": "build/icons/lumen-im-win.ico",
-      "uninstallerIcon": "build/icons/lumen-im-win.ico",
-      "installerHeaderIcon": "build/icons/lumen-im-win.ico",
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "lumeim-icon"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/**/*"
-    ],
-    "directories": {
-      "buildResources": "assets",
-      "output": "dist_electron"
     }
-  }
 }

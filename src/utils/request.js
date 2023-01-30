@@ -3,11 +3,11 @@ import { delAccessToken, getAccessToken } from '@/utils/auth'
 
 // 创建 axios 实例
 const request = axios.create({
-  // API 请求的默认前缀
-  baseURL: import.meta.env.VITE_BASE_API,
+    // API 请求的默认前缀
+    baseURL: import.meta.env.VITE_BASE_API,
 
-  // 请求超时时间
-  timeout: 10000,
+    // 请求超时时间
+    timeout: 10000,
 })
 
 /**
@@ -16,31 +16,31 @@ const request = axios.create({
  * @param {*} error
  */
 const errorHandler = error => {
-  // 判断是否是响应错误信息
-  if (error.response) {
-    if (error.response.status == 401) {
-      delAccessToken()
-      location.reload()
+    // 判断是否是响应错误信息
+    if (error.response) {
+        if (error.response.status == 401) {
+            delAccessToken()
+            location.reload()
+        }
     }
-  }
 
-  return Promise.reject(error)
+    return Promise.reject(error)
 }
 
 // 请求拦截器
 request.interceptors.request.use(config => {
-  const token = getAccessToken()
+    const token = getAccessToken()
 
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`
-  }
+    if (token) {
+        config.headers['Authorization'] = `${token}`
+    }
 
-  return config
+    return config
 }, errorHandler)
 
 // 响应拦截器
 request.interceptors.response.use(response => {
-  return response.data
+    return response.data
 }, errorHandler)
 
 /**
@@ -52,12 +52,12 @@ request.interceptors.response.use(response => {
  * @returns {Promise<any>}
  */
 export const get = (url, data = {}, options = {}) => {
-  return request({
-    url,
-    params: data,
-    method: 'get',
-    ...options,
-  })
+    return request({
+        url,
+        params: data,
+        method: 'get',
+        ...options,
+    })
 }
 
 /**
@@ -69,12 +69,12 @@ export const get = (url, data = {}, options = {}) => {
  * @returns {Promise<any>}
  */
 export const post = (url, data = {}, options = {}) => {
-  return request({
-    url,
-    method: 'post',
-    data: data,
-    ...options,
-  })
+    return request({
+        url,
+        method: 'post',
+        data: data,
+        ...options,
+    })
 }
 
 /**
@@ -86,10 +86,10 @@ export const post = (url, data = {}, options = {}) => {
  * @returns {Promise<any>}
  */
 export const upload = (url, data = {}, options = {}) => {
-  return request({
-    url,
-    method: 'post',
-    data: data,
-    ...options,
-  })
+    return request({
+        url,
+        method: 'post',
+        data: data,
+        ...options,
+    })
 }

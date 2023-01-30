@@ -1,18 +1,23 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import { NIcon, NModal, NButton, NInput, NAvatar } from 'naive-ui'
+import { ref, reactive } from "vue";
+import { NIcon, NModal, NButton, NInput, NAvatar } from "naive-ui";
 import {
   PaperPlaneOutline,
   Add,
   CreateOutline,
   CloseCircleSharp,
-} from '@vicons/ionicons5'
-import { ServeSearchUser } from '@/api/contacts'
-import { toTalk } from '@/utils/talk'
-import { ServeCreateContact } from '@/api/contacts'
-import { defAvatar } from '@/constant/default'
+} from "@vicons/ionicons5";
+import { ServeSearchUser } from "@/api/contacts";
+import { toTalk } from "@/utils/talk";
+import { ServeCreateContact } from "@/api/contacts";
+import { defAvatar } from "@/constant/default";
 
 const props = defineProps({
+  // 搜索出来的 userId list 集合
+  // uidList: {
+  //   type: Array,
+  //   default: [],
+  // },
   uid: {
     type: Number,
     default: 0,
@@ -21,68 +26,88 @@ const props = defineProps({
     type: Function,
     default: () => {},
   },
-})
+});
 
-const showModal = ref(false)
+const showModal = ref(false);
 const state = reactive({
   id: 0,
-  avatar: '',
+  avatar: "",
   gender: 0,
-  mobile: '',
-  motto: '',
-  nickname: '',
-  remark: '',
-  email: '',
+  mobile: "",
+  motto: "",
+  nickname: "",
+  remark: "",
+  email: "",
   status: 1,
-  text: '',
-})
+  text: "",
+  // totalNumbers: 0,
+  // currentPage: 0,
+  // totalPages: 0,
+  // pageSize: 1,
+  // numOfElements: 0,
+  // rows: [],
+});
 
-const isOpenFrom = ref(false)
+const isOpenFrom = ref(false);
 
 const onLoadData = () => {
-  ServeSearchUser({
-    user_id: props.uid,
-  }).then(({ code, data }) => {
-    if (code == 200) {
-      state.avatar = data.avatar
-      state.nickname = data.nickname
-      state.mobile = data.mobile
-      state.motto = data.motto
-      state.gender = data.gender
-      state.remark = data.nickname_remark
-      state.email = data.email || ''
-      state.status = data.friend_status
+  console.log('搜索用户');
+  // ServeSearchUser({
+  //   user_id: props.uid,
+  // }).then(({ code, data }) => {
+  //   if (code == 200) {
+  //     state.avatar = data.avatar
+  //     state.nickname = data.nickname
+  //     state.mobile = data.mobile
+  //     state.motto = data.motto
+  //     state.gender = data.gender
+  //     state.remark = data.nickname_remark
+  //     state.email = data.email || ''
+  //     state.status = data.friend_status
+  //     showModal.value = true
+  //   } else {
+  //     $message.info('用户信息不存在！', { showIcon: false })
+  //   }
+  // })
+  // 查询用户
+  state.avatar = 'https://i0.hdslb.com/bfs/face/54f26260efa573c94a184a8f3ffc48d357b834ef.jpg'
+      state.nickname = 'HK意境'
+      state.mobile = '17815333317'
+      state.motto = '这是签名'
+      state.gender = 1
+      state.remark = '西门'
+      state.email = '3161880795@qq.com' || ''
+      state.status = 1
+
       showModal.value = true
-    } else {
-      $message.info('用户信息不存在！', { showIcon: false })
-    }
-  })
-}
+};
 
+// 发起会话
 const onToTalk = () => {
-  toTalk(1, props.uid)
-  props.remove()
-}
+  toTalk(1, props.uid);
+  props.remove();
+};
 
+// 发起好友申请
 const onJoinContact = () => {
   if (!state.text.length) {
-    return $message.info('备注信息不能为空！')
+    return $message.info("备注信息不能为空！");
   }
 
   ServeCreateContact({
     friend_id: props.uid,
     remark: state.text,
-  }).then(res => {
+  }).then((res) => {
     if (res.code == 200) {
-      isOpenFrom.value = false
-      $message.success('申请发送成功！')
+      isOpenFrom.value = false;
+      $message.success("申请发送成功！");
     } else {
-      $message.error(res.message)
+      $message.error(res.message);
     }
-  })
-}
+  });
+};
 
-onLoadData()
+onLoadData();
 </script>
 
 <template>
@@ -90,7 +115,7 @@ onLoadData()
     v-model:show="showModal"
     :on-mask-click="
       () => {
-        props.remove()
+        props.remove();
       }
     "
     transform-origin="center"
@@ -104,7 +129,7 @@ onLoadData()
               <n-icon :component="CloseCircleSharp" :size="22" />
             </div>
           </div>
-
+          // 头像
           <div class="user-header">
             <div class="avatar">
               <div class="avatar-box">
@@ -117,7 +142,7 @@ onLoadData()
               </div>
             </div>
             <div class="nickname">
-              <span>{{ state.nickname || '未设置' }}</span>
+              <span>{{ state.nickname || "未设置" }}</span>
               <div class="share">
                 <span>分享</span>
               </div>
@@ -125,9 +150,10 @@ onLoadData()
           </div>
         </header>
 
+        // 签名
         <main class="el-main main">
           <div class="motto">
-            {{ state.motto || '编辑个签，展示我的独特态度。' }}
+            {{ state.motto || "编辑个签，展示我的独特态度。" }}
           </div>
 
           <div class="infos">
@@ -137,12 +163,12 @@ onLoadData()
             </div>
             <div class="info-item">
               <span class="name">昵称</span>
-              <span class="text">{{ state.nickname || '-' }}</span>
+              <span class="text">{{ state.nickname || "-" }}</span>
             </div>
             <div class="info-item">
               <span class="name">性别</span>
               <span class="text">{{
-                state.gender == 1 ? '男' : state.gender == 2 ? '女' : '未知'
+                state.gender == 1 ? "男" : state.gender == 2 ? "女" : "未知"
               }}</span>
             </div>
             <div class="info-item">
@@ -151,13 +177,13 @@ onLoadData()
                 class="text pointer"
                 style="display: flex; align-items: center"
               >
-                {{ state.remark || '未设置' }}&nbsp;&nbsp;
+                {{ state.remark || "未设置" }}&nbsp;&nbsp;
                 <n-icon :component="CreateOutline" :size="18" />
               </span>
             </div>
             <div class="info-item">
               <span class="name">邮箱</span>
-              <span class="text">{{ state.email || '-' }}</span>
+              <span class="text">{{ state.email || "-" }}</span>
             </div>
           </div>
         </main>
@@ -274,7 +300,7 @@ onLoadData()
       position: relative;
 
       &::before {
-        content: ' ';
+        content: " ";
         position: absolute;
         width: 0;
         height: 0;

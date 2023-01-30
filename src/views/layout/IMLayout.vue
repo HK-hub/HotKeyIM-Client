@@ -29,8 +29,8 @@ defineProps({
       </main>
     </section>
   </section>
-
-  <Sponsor />
+  <!-- 广告组件 -->
+  <!-- <Sponsor /> -->
 </template>
 <style lang="less" scoped>
 .container {

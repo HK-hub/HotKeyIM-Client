@@ -8,7 +8,7 @@ const AccessToken = 'AUTH_TOKEN'
  * @returns token
  */
 export function isLoggedIn() {
-  return getAccessToken() != ''
+    return getAccessToken() != ''
 }
 
 /**
@@ -17,21 +17,21 @@ export function isLoggedIn() {
  * @returns token
  */
 export function getAccessToken() {
-  return storage.get(AccessToken) || ''
+    return storage.get(AccessToken) || ''
 }
 
 /**
- * 设置登录授权 Token
- *
+ * 设置登录授权 Token, 过期时间2小时
+ * 
  * @returns token
  */
 export function setAccessToken(token = '', expire = 60 * 60 * 2) {
-  return storage.set(AccessToken, token, expire) || ''
+    return storage.set(AccessToken, token, expire) || ''
 }
 
 /**
  * 删除登录授权 Token
  */
 export function delAccessToken() {
-  storage.remove(AccessToken)
+    storage.remove(AccessToken)
 }
