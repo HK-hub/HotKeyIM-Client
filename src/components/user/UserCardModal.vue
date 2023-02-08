@@ -20,7 +20,6 @@ const props = defineProps({
     // },
     uid: {
         type: String,
-        default: 0,
     },
     userResult: {
         type: Object,
@@ -91,6 +90,8 @@ const onLoadData = () => {
         state.email = friend.email || ''
         // 此处的 status 标识好友状态，是否为好友
         state.status = props.userResult.status
+
+        // 设置uid
         // 展示信息
         showModal.value = true
 
@@ -111,8 +112,12 @@ const onJoinContact = () => {
     }
 
     ServeCreateContact({
-        friend_id: props.uid,
-        remark: state.text,
+        // 1.加好友，2.群
+        type: 1,
+        fromUserId: JSON.parse(localStorage.getItem('IM_USERID')).value,
+        toUserId: props.uid,
+        answer: state.text,
+        applyInfo: state.text
     }).then((res) => {
         if (res.code == 200) {
             isOpenFrom.value = false;

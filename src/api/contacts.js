@@ -2,7 +2,7 @@ import { post, get } from '@/utils/request'
 
 // 获取好友列表服务接口
 export const ServeGetContacts = data => {
-    return get('/api/v1/contact/list', data)
+    return get('/admin/friend/list', data)
 }
 
 // 解除好友关系服务接口
@@ -22,17 +22,17 @@ export const ServeSearchContact = data => {
 
 // 好友申请服务接口
 export const ServeCreateContact = data => {
-    return post('/api/v1/contact/apply/create', data)
+    return post('/admin/find/friend/apply', data)
 }
 
 // 查询好友申请服务接口
 export const ServeGetContactApplyRecords = data => {
-    return get('/api/v1/contact/apply/records', data)
+    return get('admin/apply/user/receive', data)
 }
 
 // 处理好友申请服务接口
 export const ServeApplyAccept = data => {
-    return post('/api/v1/contact/apply/accept', data)
+    return post('/admin/apply/handle/receive', data)
 }
 
 export const ServeApplyDecline = data => {
