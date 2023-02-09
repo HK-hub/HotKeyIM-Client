@@ -2,7 +2,7 @@ import { post, get } from '@/utils/request'
 
 // 获取好友列表服务接口
 export const ServeGetContacts = data => {
-    return get('/admin/friend/list', data)
+    return get('/admin/friend/list/v2', data)
 }
 
 // 解除好友关系服务接口

@@ -1,25 +1,55 @@
 <script setup>
-import {ref, computed} from 'vue'
+import {computed, ref} from 'vue'
 import {NSpace, NDivider, NTag} from 'naive-ui'
-import {SearchOutline, AddOutline} from '@vicons/ionicons5'
 import UserCardModal from '@/components/user/UserCardModal.vue'
-import MemberCard from './inner/MemberCard.vue'
-import ApplyListModal from './inner/ApplyListModal.vue'
-import UserSearchModal from './inner/UserSearchModal.vue'
 import {modal} from '@/utils/common'
 import {toTalk} from '@/utils/talk'
 import {useUserStore} from '@/store/user'
 import {ServeGetContacts} from '@/api/contacts'
+import {SearchOutline, AddOutline} from '@vicons/ionicons5'
+import MemberCard from './inner/MemberCard.vue'
+import ApplyListModal from './inner/ApplyListModal.vue'
+import UserSearchModal from './inner/UserSearchModal.vue'
 
 const userStore = useUserStore()
 const isShowDrawer = ref(false)
 const isShowUserSearch = ref(false)
 const keywords = ref('')
+const index = ref(0)
+const selectGroup = ref('')
 const items = ref([])
+const groups = ref([
+    {
+        id: 0,
+        name: '全部好友',
+        count: 1,
+    },
+    {
+        id: 1,
+        name: '家人',
+        count: 1,
+    },
+    {
+        id: 2,
+        name: '同事',
+        count: 1,
+    },
+    {
+        id: 3,
+        name: '朋友',
+        count: 1,
+    },
+])
 const filter = computed(() => {
-  return items.value.filter(item => {
-    return item.nickname.match(keywords.value) != null
-  })
+    return items.value.filter(item => {
+        console.log('select:', index, selectGroup)
+        if (index.value === 0) {
+            return item.friend.username.toLowerCase().indexOf(keywords.value.toLowerCase()) !== -1 &&
+                index.value === item.groupId
+        }
+        return item.friend.username.toLowerCase().indexOf(keywords.value.toLowerCase()) !== -1 &&
+            selectGroup.value === item.group
+    })
 })
 
 const onLoadData = () => {
@@ -28,23 +58,41 @@ const onLoadData = () => {
     }).then(res => {
         if (res.success) {
             console.log('好友列表结果：', res)
-            const friendMap = new Map(Object.entries(res.data));
-            map.forEach(function(value, key) {
-                console.log(key, value);
-                items.value.push
+            // 设置 全部好友items
+            items.value = res.data.friendList.map(item => {
+                item.groupId = 0
+                return item
+            }) || []
+            console.log('items=', items.value)
+            // 设置好友分组
+            let groupArray = res.data.groupList.map(item => {
+                // 构造对象
+                return {
+                    id: item.id,
+                    name: item.name,
+                    count: item.count
+                }
             })
-            items.value = friendMap.values() || []
+            groupArray.unshift({
+                id: 0,
+                name: '全部好友',
+                count: res.data.friendList.length,
+            })
+            groups.value = groupArray
         }
     })
 }
 
 const onToTalk = item => {
-    toTalk(1, item.id)
+    toTalk(1, item.friend.id)
 }
 
 const onInfo = item => {
     modal(UserCardModal, {
-        uid: item.id,
+        userResult: {
+            user: item.friend,
+            status: 2
+        }
     })
 }
 
@@ -96,26 +144,42 @@ onLoadData()
             </div>
         </header>
 
+        <header class="el-header">
+            <div class="tags">
+                <n-tag
+                    v-for="group in groups"
+                    class="tag pointer"
+                    :bordered="false"
+                    type="info"
+                    round
+                    @click="
+            () => {
+
+              index = group.id
+              selectGroup = group.name
+            }
+          "
+                >
+                    {{ group.name }}({{ group.count }})
+                </n-tag>
+                <n-tag class="tag pointer" :bordered="false" type="success" round>
+                    +添加分组
+                </n-tag>
+            </div>
+        </header>
+
         <main
             id="drawer-target"
             class="el-main pd-10 me-scrollbar"
             v-if="filter.length"
         >
-            <div class="tags">
-                <n-tag class="tag pointer" :bordered="false" type="info" round> 家人(10)</n-tag>
-                <n-tag class="tag pointer" :bordered="false" type="info" round> 同事(2)</n-tag>
-                <n-tag class="tag pointer" :bordered="false" type="info" round>
-                    添加标签
-                </n-tag>
-            </div>
-
             <div class="cards">
                 <MemberCard
                     v-for="item in filter"
-                    :avatar="item.avatar"
-                    :username="item.friend_remark || item.nickname"
-                    :gender="item.gender"
-                    :motto="item.motto"
+                    :avatar="item.friend.miniAvatar"
+                    :username="item.remarkName || item.friend.username"
+                    :gender="item.friend.gender"
+                    :motto="item.friend.signature"
                     flag="查看"
                     @click="onInfo(item)"
                     @to-talk="onToTalk(item)"

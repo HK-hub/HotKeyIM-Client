@@ -150,7 +150,7 @@ onLoadData();
                             <n-icon :component="CloseCircleSharp" :size="22"/>
                         </div>
                     </div>
-                    // 头像
+                    <!-- 头像 -->
                     <div class="user-header">
                         <div class="avatar">
                             <div class="avatar-box">
@@ -171,7 +171,7 @@ onLoadData();
                     </div>
                 </header>
 
-                // 签名
+                <!-- 签名 -->
                 <main class="el-main main">
                     <div class="motto">
                         {{ state.motto || "编辑个签，展示我的独特态度。" }}
