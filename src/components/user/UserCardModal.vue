@@ -119,11 +119,11 @@ const onJoinContact = () => {
         answer: state.text,
         applyInfo: state.text
     }).then((res) => {
-        if (res.code == 200) {
+        if (res.success) {
             isOpenFrom.value = false;
             $message.success("申请发送成功！");
         } else {
-            $message.error(res.message);
+            $message.error(res.data || res.message);
         }
     });
 };

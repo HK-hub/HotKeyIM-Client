@@ -1,15 +1,15 @@
 <script setup>
-import {computed, ref} from 'vue'
-import {NSpace, NDivider, NTag} from 'naive-ui'
+import {ref, computed} from 'vue'
+import {NSpace, NDivider, NTag, NTabs, NTab, NDropdown} from 'naive-ui'
+import {SearchOutline, AddOutline} from '@vicons/ionicons5'
 import UserCardModal from '@/components/user/UserCardModal.vue'
+import MemberCard from './inner/MemberCard.vue'
+import ApplyListModal from './inner/ApplyListModal.vue'
+import UserSearchModal from './inner/UserSearchModal.vue'
 import {modal} from '@/utils/common'
 import {toTalk} from '@/utils/talk'
 import {useUserStore} from '@/store/user'
 import {ServeGetContacts} from '@/api/contacts'
-import {SearchOutline, AddOutline} from '@vicons/ionicons5'
-import MemberCard from './inner/MemberCard.vue'
-import ApplyListModal from './inner/ApplyListModal.vue'
-import UserSearchModal from './inner/UserSearchModal.vue'
 
 const userStore = useUserStore()
 const isShowDrawer = ref(false)
@@ -100,6 +100,17 @@ const onShowApplyList = () => {
     isShowDrawer.value = true
 }
 
+const onToolsMenu = value => {
+    switch (value) {
+        case 'add':
+            isShowUserSearch.value = true
+            break
+        case 'group':
+            window.$message.info('待完善...')
+            break
+    }
+}
+
 onLoadData()
 </script>
 
@@ -135,37 +146,41 @@ onLoadData()
                         </template>
                     </n-input>
 
-                    <n-button circle @click="isShowUserSearch = true">
-                        <template #icon>
-                            <n-icon :component="AddOutline"/>
-                        </template>
-                    </n-button>
+                    <n-dropdown
+                        :animated="true"
+                        trigger="click"
+                        :show-arrow="false"
+                        @select="onToolsMenu"
+                        :options="[
+              {
+                label: '添加好友',
+                key: 'add',
+              },
+              {
+                label: '分组管理',
+                key: 'group',
+              },
+            ]"
+                    >
+                        <n-button circle>
+                            <template #icon>
+                                <n-icon :component="AddOutline"/>
+                            </template>
+                        </n-button>
+                    </n-dropdown>
                 </n-space>
             </div>
         </header>
 
-        <header class="el-header">
-            <div class="tags">
-                <n-tag
-                    v-for="group in groups"
-                    class="tag pointer"
-                    :bordered="false"
-                    type="info"
-                    round
-                    @click="
-            () => {
-
-              index = group.id
-              selectGroup = group.name
-            }
-          "
-                >
-                    {{ group.name }}({{ group.count }})
-                </n-tag>
-                <n-tag class="tag pointer" :bordered="false" type="success" round>
-                    +添加分组
-                </n-tag>
-            </div>
+        <header class="el-header pd-10">
+            <n-tabs type="line" v-model:value="index">
+                <n-tab v-for="tab in groups" :key="tab.id" :name="tab.id" @click="() => {
+              index = tab.id
+              selectGroup = tab.name
+            }">
+                    {{ tab.name }}({{ tab.count }})
+                </n-tab>
+            </n-tabs>
         </header>
 
         <main
