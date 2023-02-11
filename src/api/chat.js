@@ -2,12 +2,12 @@ import { post, get, upload } from '@/utils/request'
 
 // 获取聊天列表服务接口
 export const ServeGetTalkList = data => {
-  return get('/api/v1/talk/list', data)
+  return get('/admin/talk/list', data)
 }
 
 // 聊天列表创建服务接口
 export const ServeCreateTalkList = data => {
-  return post('/api/v1/talk/create', data)
+  return post('/admin/talk/create', data)
 }
 
 // 删除聊天列表服务接口

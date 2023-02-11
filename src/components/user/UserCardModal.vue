@@ -83,6 +83,7 @@ const onLoadData = () => {
         let friend = props.userResult.user
         state.avatar = friend.miniAvatar
         state.nickname = friend.username
+        state.account = friend.account
         state.mobile = friend.phone
         state.motto = friend.signature
         state.gender = friend.gender
@@ -101,6 +102,7 @@ const onLoadData = () => {
 
 // 发起会话
 const onToTalk = () => {
+    console.log('onToTalk=', props.uid)
     toTalk(1, props.uid);
     props.remove();
 };
@@ -179,12 +181,12 @@ onLoadData();
 
                     <div class="infos">
                         <div class="info-item">
-                            <span class="name">手机</span>
-                            <span class="text">{{ state.mobile }}</span>
-                        </div>
-                        <div class="info-item">
                             <span class="name">昵称</span>
                             <span class="text">{{ state.nickname || "-" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="name">账号</span>
+                            <span class="text">{{ state.account }}</span>
                         </div>
                         <div class="info-item">
                             <span class="name">性别</span>
@@ -205,6 +207,10 @@ onLoadData();
                         <div class="info-item">
                             <span class="name">邮箱</span>
                             <span class="text">{{ state.email || "-" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="name">手机</span>
+                            <span class="text">{{ state.mobile }}</span>
                         </div>
                     </div>
                 </main>

@@ -1,14 +1,14 @@
-import { h } from 'vue'
-import { useTalkStore } from '@/store/talk'
-import { useUserStore } from '@/store/user'
-import { useDialogueStore } from '@/store/dialogue'
-import { getAccessToken, isLoggedIn } from './utils/auth'
+import {h} from 'vue'
+import {useTalkStore} from '@/store/talk'
+import {useUserStore} from '@/store/user'
+import {useDialogueStore} from '@/store/dialogue'
+import {getAccessToken, isLoggedIn} from './utils/auth'
 import WsSocket from './plugins/ws-socket'
 import EventTalk from './event/socket/talk'
 import EventKeyboard from './event/socket/keyboard'
 import EventLogin from './event/socket/login'
-import { NAvatar } from 'naive-ui'
-import { notifyIcon } from '@/constant/default'
+import {NAvatar} from 'naive-ui'
+import {notifyIcon} from '@/constant/default'
 
 /**
  * Socket 连接实例
@@ -42,8 +42,8 @@ class Socket {
             onOpen: evt => {
                 // 更新 WebSocket 连接状态
                 useUserStore().updateSocketStatus(true)
-                    // TODO
-                    // useTalkStore().loadTalkList()
+                // TODO: 加载会话列表
+                useTalkStore().loadTalkList()
             },
             // Websocket 断开连接回调方法
             onClose: evt => {
@@ -91,7 +91,7 @@ class Socket {
 
             if (dialogueStore.index_name == `1_${data.sender_id}`) {
                 for (const msgid of data.ids) {
-                    dialogueStore.updateDialogueRecord({ id: msgid, is_read: 1 })
+                    dialogueStore.updateDialogueRecord({id: msgid, is_read: 1})
                 }
             }
         })
@@ -103,7 +103,8 @@ class Socket {
         this.socket.on('event_talk_keyboard', data => new EventKeyboard(data))
 
         // 消息撤回事件
-        this.socket.on('event_talk_revoke', data => {})
+        this.socket.on('event_talk_revoke', data => {
+        })
 
         // 好友申请事件
         this.socket.on('event_contact_apply', data => {

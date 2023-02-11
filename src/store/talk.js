@@ -80,11 +80,16 @@ export const useTalkStore = defineStore('talk', {
     // 加载会话列表
     loadTalkList() {
       this.loadStatus = 2
-
-      const response = ServeGetTalkList()
+      console.log('加载会话列表!')
+      const response = ServeGetTalkList({
+        userId: JSON.parse(localStorage.getItem('IM_USERID')).value
+      })
 
       response.then(({ code, data }) => {
+        console.log('serveGetTalkList:', data)
+
         if (code == 200) {
+          console.log('serveGetTalkList:', data)
           this.items = data.items.map(item => formatTalkItem(item))
 
           this.loadStatus = 3

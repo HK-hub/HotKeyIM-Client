@@ -82,6 +82,7 @@ export function formatTalkItem(params) {
  * @param {Integer} receiver_id 接收者ID
  */
 export function toTalk(talk_type, receiver_id) {
+  console.log('toTalk.receiver_id=', receiver_id)
   if (findTalkIndex(`${talk_type}_${receiver_id}`) >= 0) {
     sessionStorage.setItem(KEY_INDEX_NAME, `${talk_type}_${receiver_id}`)
     return router.push({
@@ -92,11 +93,14 @@ export function toTalk(talk_type, receiver_id) {
     })
   }
 
+  // 创建会话
   ServeCreateTalkList({
-    talk_type: parseInt(talk_type),
-    receiver_id: parseInt(receiver_id),
+    type: parseInt(talk_type),
+    receiverId: receiver_id,
+    userId: JSON.parse(localStorage.getItem('IM_USERID')).value
   }).then(({ code, data, message }) => {
     if (code == 200) {
+      console.log('ServeCreateTalkList=', data)
       sessionStorage.setItem(KEY_INDEX_NAME, `${talk_type}_${receiver_id}`)
 
       if (findTalkIndex(`${talk_type}_${receiver_id}`) === -1) {

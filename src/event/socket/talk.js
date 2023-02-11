@@ -161,6 +161,7 @@ class Talk extends Base {
    * 加载对接节点
    */
   addTalkItem() {
+    console.log('加载对接节点')
     let receiver_id = this.sender_id
     let talk_type = this.talk_type
 
