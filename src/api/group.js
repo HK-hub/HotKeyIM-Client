@@ -1,8 +1,8 @@
 import { post, get } from '@/utils/request'
 
 // 查询用户群聊服务接口
-export const ServeGetGroups = () => {
-  return get('/api/v1/group/list')
+export const ServeGetGroups = (data) => {
+  return get('/admin/group/list', data)
 }
 
 export const ServeGroupOvertList = (data) => {
@@ -16,7 +16,7 @@ export const ServeGroupDetail = data => {
 
 // 创建群聊服务接口
 export const ServeCreateGroup = data => {
-  return post('/api/v1/group/create', data)
+  return post('/admin/group/create', data)
 }
 
 //  修改群信息
@@ -51,7 +51,7 @@ export const ServeUpdateGroupCard = data => {
 
 // 获取用户可邀请加入群组的好友列表
 export const ServeGetInviteFriends = data => {
-  return get('/api/v1/group/member/invites', data)
+  return get('/admin/member/enable/invite', data)
 }
 
 //  获取群组成员列表

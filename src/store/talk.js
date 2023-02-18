@@ -89,7 +89,7 @@ export const useTalkStore = defineStore('talk', {
         console.log('serveGetTalkList:', data)
 
         if (code == 200) {
-          console.log('serveGetTalkList:', data)
+          console.log('serveGetTalkList success:', data)
           this.items = data.items.map(item => formatTalkItem(item))
 
           this.loadStatus = 3
