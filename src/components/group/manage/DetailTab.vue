@@ -1,6 +1,6 @@
 <script setup>
 import {ref, reactive, onMounted} from 'vue'
-import {NForm, NFormItem, NInput, NDropdown} from 'naive-ui'
+import {NForm, NFormItem, NInput, NDropdown, NSelect} from 'naive-ui'
 import AvatarCropper from '@/components/base/AvatarCropper.vue'
 import {ServeGroupDetail, ServeEditGroup} from '@/api/group'
 
@@ -10,69 +10,61 @@ const userId = JSON.parse(localStorage.getItem('IM_USERID')).value
 const groupCategoryOptions = [
     {
         label: "保密/未知",
-        key: 0,
+        value: 0,
         disabled: false
     },
     {
         label: "兴趣爱好",
-        key: 1,
+        value: 1,
         disabled: false
     },
     {
         label: "行业交流",
-        key: 2,
+        value: 2,
         disabled: false
     },
     {
         label: "生活休闲",
-        key: 3,
+        value: 3,
         disabled: false
     },
     {
         label: "学习考试",
-        key: 4,
+        value: 4,
         disabled: false
     },
     {
         label: "娱乐游戏",
-        key: 5,
+        value: 5,
         disabled: false
     },
     {
         label: "置业安家",
-        key: 6,
+        value: 6,
         disabled: false
     },
     {
         label: "品牌产品",
-        key: 7,
+        value: 7,
         disabled: false
     },
     {
         label: "粉丝",
-        key: 8,
+        value: 8,
         disabled: false
     },
     {
         label: "同学同事",
-        key: 9,
+        value: 9,
         disabled: false
     },
     {
         label: "家校师生",
-        key: 10,
+        value: 10,
         disabled: false
     }
 ]
 
-// 分类选择处理函数
-function handleSelect (key) {
-    console.log('selected options key:', key)
-    modelDetail.category = groupCategoryOptions.filter(it => {
-        return it.key === key
-    })[0].label;
-
-}
 
 const props = defineProps({
     id: {
@@ -84,6 +76,7 @@ const props = defineProps({
 const cropper = ref(false)
 
 const modelDetail = reactive({
+    id: '',
     name: '',
     qrcode: '',
     avatar: '',
@@ -95,6 +88,7 @@ const modelDetail = reactive({
 
 const onUploadAvatar = avatar => {
     cropper.value = false
+    console.log('onUploadAvatar:',avatar)
     modelDetail.avatar = avatar
 }
 
@@ -106,6 +100,7 @@ const onLoadData = () => {
         userId: userId
     }).then(res => {
         if (res.code == 200) {
+            modelDetail.id = res.data.id
             modelDetail.name = res.data.groupName
             modelDetail.qrcode = res.data.qrcode
             modelDetail.avatar = res.data.groupAvatar
@@ -115,7 +110,7 @@ const onLoadData = () => {
 
             // 处理分类
             groupCategoryOptions.forEach(op => {
-                if (op.key === modelDetail.categoryKey) {
+                if (op.value === modelDetail.categoryKey) {
                     // op.disabled = true
                     modelDetail.category = op.label
                 }
@@ -191,18 +186,7 @@ onMounted(() => {
 
 
                 <n-form-item label="群聊分类" required path="name">
-                    <n-dropdown trigger="click" :options="groupCategoryOptions" @select="handleSelect" style="overflow: scroll">
-                        <n-button>{{ modelDetail.category }}
-                            <n-icon size="12" style="margin-left: 10px">
-                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                     viewBox="0 0 1024 1024">
-                                    <path
-                                        d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2L227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"
-                                        fill="currentColor"></path>
-                                </svg>
-                            </n-icon>
-                        </n-button>
-                    </n-dropdown>
+                    <n-select v-model:value="modelDetail.category" :options="groupCategoryOptions" placeholder="{{modelDetail.category}}"/>
                 </n-form-item>
 
                 <n-form-item label="群名称" required path="name">
@@ -233,6 +217,7 @@ onMounted(() => {
     <!-- 头像裁剪组件 -->
     <AvatarCropper
         v-if="cropper"
+        :gid="modelDetail.id"
         @close="cropper = false"
         @success="onUploadAvatar"
     />
