@@ -30,11 +30,10 @@ const errorHandler = error => {
 // 请求拦截器
 request.interceptors.request.use(config => {
     const token = getAccessToken()
-
+    console.log('请求拦截：', token)
     if (token) {
         config.headers['Authorization'] = `${token}`
     }
-
     return config
 }, errorHandler)
 

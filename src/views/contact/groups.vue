@@ -12,6 +12,7 @@ const isShowCreateGroupBox = ref(false)
 const keywords = ref('')
 let selected = ref(0)
 const items = ref([])
+const itemsCopy = ref([])
 const myCreatedGroups = ref([])
 const myJoinedGroups = ref([])
 const masterId = JSON.parse(localStorage.getItem('IM_USERID')).value
@@ -21,16 +22,25 @@ const params = reactive({
     id: 0,
 })
 
-let filter = computed(() => {
+const filter = computed(() => {
     return items.value.filter(it => {
         return it.groupName.match(keywords.value) != null
     })
 })
 
+
 // 选择群组类别：0.全部，1.创建的，2.加入的
 const onSelectGroup = (type) => {
     selected = type;
     console.log('选择：',selected)
+
+    if (selected === 1) {
+        items.value = myCreatedGroups.value
+    } else if (selected === 2) {
+        items.value = myJoinedGroups.value
+    } else {
+        items.value = itemsCopy.value
+    }
 }
 
 const onLoadData = () => {
@@ -40,6 +50,7 @@ const onLoadData = () => {
         if (res.code == 200) {
             console.log('群聊列表：', res)
             items.value = res.data || []
+            itemsCopy.value = items.value
             let masterId = JSON.parse(localStorage.getItem('IM_USERID')).value
             // 我创建的群聊
             myCreatedGroups.value = items.value.filter(it => {
@@ -49,6 +60,7 @@ const onLoadData = () => {
             myJoinedGroups.value = items.value.filter(it => {
                 return it.groupMaster !== masterId
             })
+            console.log('我创建的:', myCreatedGroups)
         }
     })
 }

@@ -9,6 +9,8 @@ import {
     ServeGetInviteFriends,
 } from '@/api/group'
 
+
+const userId = JSON.parse(localStorage.getItem('IM_USERID')).value
 const emit = defineEmits(['close', 'on-submit'])
 const props = defineProps({
     gid: {
@@ -115,8 +117,9 @@ const onCreateSubmit = ids => {
 
 const onInviteSubmit = ids => {
     ServeInviteGroup({
-        group_id: props.gid,
-        ids: ids.join(','),
+        inviteeIds: ids,
+        inviterId: userId,
+        groupId: props.gid,
     }).then(res => {
         if (res.code == 200) {
             emit('on-invite')

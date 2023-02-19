@@ -55,48 +55,28 @@ const state = reactive({
 const isOpenFrom = ref(false);
 
 const onLoadData = () => {
-    console.log('搜索用户');
-    /*ServeSearchUser({
-        searchKey: props.uid,
+
+    // 查询用户
+    console.log('查询用户id:', props.uid)
+    ServeSearchUser({
+        userId: props.uid,
     }).then(({code, data}) => {
-        console.log()
+        console.log('search user:', data)
         if (code === 200) {
             state.avatar = data.miniAvatar
             state.nickname = data.username
+            state.account = data.account
             state.mobile = data.phone
             state.motto = data.signature
             state.gender = data.gender
-            state.remark = ''
+            state.remark = data.username
             state.email = data.email || ''
             state.status = data.status
             showModal.value = true
         } else {
             $message.info('用户信息不存在！', {showIcon: false})
         }
-    })*/
-
-    // 查询用户
-    if (props.userResult == null) {
-        console.log('props.userResult == null',)
-        $message.info('用户信息不存在！', {showIcon: true})
-    } else {
-        let friend = props.userResult.user
-        state.avatar = friend.miniAvatar
-        state.nickname = friend.username
-        state.account = friend.account
-        state.mobile = friend.phone
-        state.motto = friend.signature
-        state.gender = friend.gender
-        state.remark = ''
-        state.email = friend.email || ''
-        // 此处的 status 标识好友状态，是否为好友
-        state.status = props.userResult.status
-
-        // 设置uid
-        // 展示信息
-        showModal.value = true
-
-    }
+    })
     showModal.value = true
 };
 
@@ -234,7 +214,7 @@ onLoadData();
                     <template v-if="isOpenFrom">
                         <n-input
                             type="text"
-                            placeholder="设置添加好友备注 (按 Enter 键提交)"
+                            placeholder="设置添加好友申请信息 (按 Enter 键提交)"
                             v-model:value="state.text"
                             @keydown.enter.native="onJoinContact"
                         />

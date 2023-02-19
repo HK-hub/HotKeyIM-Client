@@ -25,11 +25,6 @@ const onSubmit = () => {
     if (!keyword.value.length) {
         return;
     }
-    /*modal(UserCardModal, {
-        // TODO 好友发现列表
-        uid: '1122233',
-        // uidList: res.data,
-    });*/
     ServeSearchContact({
         requestType: 0,
         searchKey: keyword.value,

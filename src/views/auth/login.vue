@@ -85,8 +85,8 @@ const onClickAccount = (type) => {
     model.username = "3161880795@qq.com";
     model.password = "123456";
   } else {
-    model.username = "18798272055";
-    model.password = "admin123";
+    model.username = "p.ohbkyke@qq.com";
+    model.password = "123456hh";
   }
 
   onLogin();
@@ -147,7 +147,7 @@ const onClickAccount = (type) => {
       </n-divider>
       <div class="preview-account">
         <p @click="onClickAccount(1)">预览账号:3161880795@qq.com / 密码: 123456</p>
-        <p @click="onClickAccount(2)">预览账号:18798272055 / 密码: admin123</p>
+        <p @click="onClickAccount(2)">预览账号:p.ohbkyke@qq.com / 密码: 123456</p>
       </div>
     </footer>
   </section>

@@ -46,7 +46,7 @@ export const ServeFindFriendApplyNum = data => {
 
 // 搜索用户信息服务接口
 export const ServeSearchUser = data => {
-    return post('/admin/find/friend/account', data)
+    return get('/admin/user/id', data)
 }
 
 
