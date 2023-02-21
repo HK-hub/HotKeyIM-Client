@@ -50,27 +50,28 @@ export function findTalk(index_name) {
  */
 export function formatTalkItem(params) {
   let options = {
-    id: 0,
-    talk_type: 1,
-    receiver_id: 0,
-    name: '未设置昵称',
-    remark_name: '',
-    avatar: '',
-    is_disturb: 0,
-    is_top: 0,
-    is_online: 0,
-    is_robot: 0,
-    unread_num: 0,
+    id: params.id,
+    sessionType: params.sessionType,
+    receiverId: params.receiverId,
+    name: params.receiverName,
+    remark_name: params.receiverName,
+    avatar: params.avatar ? params.avatar : '',
+    disturb: params.disturb,
+    top: params.top,
+    online: params.online,
+    robot: params.robot,
+    unreadCount: params.unreadCount,
     content: '......',
-    draft_text: '',
+    draft: params.draft,
     msg_text: '',
     index_name: '',
-    created_at: parseTime(new Date()),
+    created_at: params.createTime ? parseTime(params.createTime) :parseTime(new Date()),
   }
 
-  Object.assign(options, params)
+  //Object.assign(options, params)
 
-  options.index_name = `${options.talk_type}_${options.receiver_id}`
+  // 设置索引
+  options.index_name = `${options.sessionType}_${options.receiverId}`
 
   return options
 }

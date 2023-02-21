@@ -18,6 +18,7 @@
         "highlight.js": "^11.5.0",
         "js-audio-recorder": "^1.0.7",
         "pinia": "^2.0.13",
+        "uuid": "^9.0.0",
         "vue": "^3.2.25",
         "vue-cropper": "^1.0.2",
         "vue-router": "^4.0.12"
@@ -48,9 +49,11 @@
         },
         "win": {
             "icon": "build/icons/lumen-im-mac.png",
-            "target": [{
-                "target": "nsis"
-            }]
+            "target": [
+                {
+                    "target": "nsis"
+                }
+            ]
         },
         "nsis": {
             "oneClick": false,

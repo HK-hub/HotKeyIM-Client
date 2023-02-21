@@ -89,10 +89,7 @@ const onToTalk = item => {
 
 const onInfo = item => {
     modal(UserCardModal, {
-        userResult: {
-            user: item.friend,
-            status: 2
-        }
+        uid: item.friend.id,
     })
 }
 

@@ -23,7 +23,7 @@ export const useTalkStore = defineStore('talk', {
   getters: {
     // 过滤所有置顶对话列表
     topItems: state => {
-      return state.items.filter(item => item.is_top == 1)
+      return state.items.filter(item => item.top === 1 || item.top === true)
     },
 
     // 对话列表
@@ -36,7 +36,7 @@ export const useTalkStore = defineStore('talk', {
     // 消息未读数总计
     talkUnreadNum: state => {
       return state.items.reduce((total, item) => {
-        return total + parseInt(item.unread_num)
+        return total + parseInt(item.unreadCount)
       }, 0)
     },
   },
@@ -90,7 +90,7 @@ export const useTalkStore = defineStore('talk', {
 
         if (code == 200) {
           console.log('serveGetTalkList success:', data)
-          this.items = data.items.map(item => formatTalkItem(item))
+          this.items = data.map(item => formatTalkItem(item))
 
           this.loadStatus = 3
         } else {

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { delAccessToken, getAccessToken } from '@/utils/auth'
+import {v4 as uuidv4} from 'uuid';
 
 // 创建 axios 实例
 const request = axios.create({
@@ -32,8 +33,14 @@ request.interceptors.request.use(config => {
     const token = getAccessToken()
     console.log('请求拦截：', token)
     if (token) {
+        // token
         config.headers['Authorization'] = `${token}`
     }
+
+    // traceId
+    const traceId = uuidv4()
+    config.headers['traceId'] = traceId;
+    console.log('traceId=', traceId)
     return config
 }, errorHandler)
 

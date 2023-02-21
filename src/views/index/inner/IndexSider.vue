@@ -225,7 +225,7 @@ const onContextMenuTalk = (e, item) => {
     state.dropdown.item = Object.assign({}, item)
     state.dropdown.options = []
 
-    if (item.talk_type == 1) {
+    if (item.sessionType == 1) {
         state.dropdown.options.push({
             icon: renderIcon(IdCardOutline),
             label: '好友信息',
@@ -239,16 +239,16 @@ const onContextMenuTalk = (e, item) => {
     }
 
     state.dropdown.options.push({
-        icon: item.is_top ? renderIcon(ArrowDown) : renderIcon(ArrowUp),
-        label: item.is_top ? '取消置顶' : '会话置顶',
+        icon: item.top ? renderIcon(ArrowDown) : renderIcon(ArrowUp),
+        label: item.top ? '取消置顶' : '会话置顶',
         key: 'top',
     })
 
     state.dropdown.options.push({
-        icon: item.is_disturb
+        icon: item.disturb
             ? renderIcon(NotificationsOutline)
             : renderIcon(NotificationsOffOutline),
-        label: item.is_disturb ? '关闭免打扰' : '开启免打扰',
+        label: item.disturb ? '关闭免打扰' : '开启免打扰',
         key: 'disturb',
     })
 
@@ -258,7 +258,7 @@ const onContextMenuTalk = (e, item) => {
         key: 'remove',
     })
 
-    if (item.talk_type == 1) {
+    if (item.sessionType == 1) {
         state.dropdown.options.push({
             icon: renderIcon(TrashOutline),
             label: '删除好友',
@@ -432,7 +432,7 @@ onMounted(() => {
                     :data="item"
                     :avatar="item.avatar"
                     :username="item.remark_name || item.name"
-                    :active="item.index_name == indexName"
+                    :active="item.index_name === indexName"
                     @tab-talk="onTabTalk"
                     @top-talk="onToTopTalk"
                     @contextmenu.prevent="onContextMenuTalk($event, item)"
