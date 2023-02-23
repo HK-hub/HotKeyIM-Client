@@ -1,8 +1,8 @@
 import { post, get, upload } from '@/utils/request'
 
 // 查询用户表情包服务接口
-export const ServeFindUserEmoticon = () => {
-  return get('/api/v1/emoticon/list')
+export const ServeFindUserEmoticon = (data) => {
+  return get('/admin/emoticon/user/list', data)
 }
 
 // 查询系统表情包服务接口

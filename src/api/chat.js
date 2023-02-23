@@ -27,7 +27,7 @@ export const ServeClearTalkUnreadNum = data => {
 
 // 获取聊天记录服务接口
 export const ServeTalkRecords = data => {
-  return get('/api/v1/talk/records', data)
+  return get('/admin/message/records/latest', data)
 }
 
 // 获取转发会话记录详情列表服务接口
@@ -42,7 +42,7 @@ export const ServeSetNotDisturb = data => {
 
 // 查找用户聊天记录服务接口
 export const ServeFindTalkRecords = data => {
-  return get('/api/v1/talk/records/history', data)
+  return get('/admin/message/records/history', data)
 }
 
 // 搜索用户聊天记录服务接口

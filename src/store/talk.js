@@ -36,7 +36,7 @@ export const useTalkStore = defineStore('talk', {
     // 消息未读数总计
     talkUnreadNum: state => {
       return state.items.reduce((total, item) => {
-        return total + parseInt(item.unreadCount)
+        return total + parseInt(item.unread_num)
       }, 0)
     },
   },

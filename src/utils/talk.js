@@ -1,28 +1,28 @@
-import { useTalkStore } from '@/store/talk'
+import {useTalkStore} from '@/store/talk'
 import router from '@/router'
-import { parseTime } from '@/utils/datetime'
-import { ServeCreateTalkList } from '@/api/chat'
+import {parseTime} from '@/utils/datetime'
+import {ServeCreateTalkList} from '@/api/chat'
 
 const KEY_INDEX_NAME = 'send_message_index_name'
 
 export function formatTalkRecord(login_uid, data) {
-  data.float = 'center'
+    data.float = 'center'
 
-  if (data.user_id > 0) {
-    data.float = data.user_id == login_uid ? 'right' : 'left'
-  }
+    if (data.user_id > 0) {
+        data.float = data.user_id == login_uid ? 'right' : 'left'
+    }
 
-  data.isCheck = false
+    data.isCheck = false
 
-  return data
+    return data
 }
 
 // 播放消息提示
 export function palyMusic(muted = false) {
-  let audio = document.getElementById('audio')
-  audio.currentTime = 0
-  audio.muted = muted
-  audio.play()
+    let audio = document.getElementById('audio')
+    audio.currentTime = 0
+    audio.muted = muted
+    audio.play()
 }
 
 /**
@@ -31,7 +31,7 @@ export function palyMusic(muted = false) {
  * @param {String} index_name
  */
 export function findTalkIndex(index_name) {
-  return useTalkStore().items.findIndex(item => item.index_name === index_name)
+    return useTalkStore().items.findIndex(item => item.index_name === index_name)
 }
 
 /**
@@ -40,7 +40,7 @@ export function findTalkIndex(index_name) {
  * @param {String} index_name
  */
 export function findTalk(index_name) {
-  return useTalkStore().items.find(item => item.index_name === index_name)
+    return useTalkStore().items.find(item => item.index_name === index_name)
 }
 
 /**
@@ -49,31 +49,33 @@ export function findTalk(index_name) {
  * @param {Object} params
  */
 export function formatTalkItem(params) {
-  let options = {
-    id: params.id,
-    sessionType: params.sessionType,
-    receiverId: params.receiverId,
-    name: params.receiverName,
-    remark_name: params.receiverName,
-    avatar: params.avatar ? params.avatar : '',
-    disturb: params.disturb,
-    top: params.top,
-    online: params.online,
-    robot: params.robot,
-    unreadCount: params.unreadCount,
-    content: '......',
-    draft: params.draft,
-    msg_text: '',
-    index_name: '',
-    created_at: params.createTime ? parseTime(params.createTime) :parseTime(new Date()),
-  }
+    let options = {
+        id: params.id,
+        talk_type: params.sessionType,
+        receiver_id: params.receiverId,
+        name: params.receiverName,
+        remark_name: params.receiverName,
+        avatar: params.avatar ? params.avatar : '',
+        disturb: params.disturb,
+        top: params.top,
+        online: params.online,
+        robot: params.robot,
+        unread_num: params.unreadCount,
+        content: '......',
+        draft: params.draft,
+        msg_text: '',
+        index_name: '',
+        // created_at: params.createTime ? parseTime(params.createTime) :parseTime(new Date()),
+        created_at: params.createTime ? params.createTime : parseTime(new Date()),
 
-  //Object.assign(options, params)
+    }
 
-  // 设置索引
-  options.index_name = `${options.sessionType}_${options.receiverId}`
+    //Object.assign(options, params)
 
-  return options
+    // 设置索引
+    options.index_name = `${options.talk_type}_${options.receiver_id}`
+
+    return options
 }
 
 /**
@@ -83,41 +85,41 @@ export function formatTalkItem(params) {
  * @param {Integer} receiver_id 接收者ID
  */
 export function toTalk(talk_type, receiver_id) {
-  console.log('toTalk.receiver_id=', receiver_id)
-  if (findTalkIndex(`${talk_type}_${receiver_id}`) >= 0) {
-    sessionStorage.setItem(KEY_INDEX_NAME, `${talk_type}_${receiver_id}`)
-    return router.push({
-      path: '/message',
-      query: {
-        v: new Date().getTime(),
-      },
-    })
-  }
-
-  // 创建会话
-  ServeCreateTalkList({
-    type: parseInt(talk_type),
-    receiverId: receiver_id,
-    userId: JSON.parse(localStorage.getItem('IM_USERID')).value
-  }).then(({ code, data, message }) => {
-    if (code == 200) {
-      console.log('ServeCreateTalkList=', data)
-      sessionStorage.setItem(KEY_INDEX_NAME, `${talk_type}_${receiver_id}`)
-
-      if (findTalkIndex(`${talk_type}_${receiver_id}`) === -1) {
-        useTalkStore().addItem(formatTalkItem(data))
-      }
-
-      router.push({
-        path: '/message',
-        query: {
-          v: new Date().getTime(),
-        },
-      })
-    } else {
-      $message.info(message)
+    console.log('toTalk.receiver_id=', receiver_id)
+    if (findTalkIndex(`${talk_type}_${receiver_id}`) >= 0) {
+        sessionStorage.setItem(KEY_INDEX_NAME, `${talk_type}_${receiver_id}`)
+        return router.push({
+            path: '/message',
+            query: {
+                v: new Date().getTime(),
+            },
+        })
     }
-  })
+
+    // 创建会话
+    ServeCreateTalkList({
+        type: parseInt(talk_type),
+        receiverId: receiver_id,
+        userId: JSON.parse(localStorage.getItem('IM_USERID')).value
+    }).then(({code, data, message}) => {
+        if (code == 200) {
+            console.log('ServeCreateTalkList=', data)
+            sessionStorage.setItem(KEY_INDEX_NAME, `${talk_type}_${receiver_id}`)
+
+            if (findTalkIndex(`${talk_type}_${receiver_id}`) === -1) {
+                useTalkStore().addItem(formatTalkItem(data))
+            }
+
+            router.push({
+                path: '/message',
+                query: {
+                    v: new Date().getTime(),
+                },
+            })
+        } else {
+            $message.info(message)
+        }
+    })
 }
 
 /**
@@ -126,11 +128,11 @@ export function toTalk(talk_type, receiver_id) {
  * @returns
  */
 export function getCacheIndexName() {
-  let index_name = sessionStorage.getItem(KEY_INDEX_NAME)
+    let index_name = sessionStorage.getItem(KEY_INDEX_NAME)
 
-  if (index_name) {
-    sessionStorage.removeItem(KEY_INDEX_NAME)
-  }
+    if (index_name) {
+        sessionStorage.removeItem(KEY_INDEX_NAME)
+    }
 
-  return index_name
+    return index_name
 }

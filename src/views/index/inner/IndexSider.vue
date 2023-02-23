@@ -75,17 +75,18 @@ const onTabTalk = data => {
     if (data.index_name === indexName.value) {
         return
     }
-
+    console.log('切换会话标签：', data)
     // 更新编辑信息
     dialogueStore.setDialogue({
         username: data.remark_name || data.name,
         talk_type: data.talk_type,
         receiver_id: data.receiver_id,
-        online: data.is_online == 1,
+        online: data.online || data.online === 1,
     })
 
+    console.log('会话标签切换成功：',dialogueStore)
     // 更新编辑草稿
-    dialogueStore.updateEditorText(data.draft_text)
+    dialogueStore.updateEditorText(data.draft)
 
     // 清空消息未读数
     if (data.unread_num > 0) {
@@ -225,7 +226,7 @@ const onContextMenuTalk = (e, item) => {
     state.dropdown.item = Object.assign({}, item)
     state.dropdown.options = []
 
-    if (item.sessionType == 1) {
+    if (item.talk_type == 1) {
         state.dropdown.options.push({
             icon: renderIcon(IdCardOutline),
             label: '好友信息',
@@ -258,7 +259,7 @@ const onContextMenuTalk = (e, item) => {
         key: 'remove',
     })
 
-    if (item.sessionType == 1) {
+    if (item.talk_type == 1) {
         state.dropdown.options.push({
             icon: renderIcon(TrashOutline),
             label: '删除好友',

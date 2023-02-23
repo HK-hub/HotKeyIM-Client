@@ -41,6 +41,13 @@ request.interceptors.request.use(config => {
     const traceId = uuidv4()
     config.headers['traceId'] = traceId;
     console.log('traceId=', traceId)
+
+    // sign 签名验证
+    var timestamp = new Date().getTime()
+    config.headers['X-Time'] = timestamp
+    config.headers['x-Nonce'] = JSON.parse(localStorage.getItem('IM_USERID')).value + '-' +
+        timestamp + '-' + (Math.floor(Math.random()*(99999-1000+1))+1000)
+
     return config
 }, errorHandler)
 
