@@ -6,10 +6,16 @@ import {ServeCreateTalkList} from '@/api/chat'
 const KEY_INDEX_NAME = 'send_message_index_name'
 
 export function formatTalkRecord(login_uid, data) {
-    data.float = 'center'
+    console.log('消息记录格式化：', data)
+    data.layout = 'center'
+    let senderId = parseInt(data.senderId)
+    login_uid = parseInt(login_uid)
+    console.log('参数类型：login_uid,senderId',typeof login_uid, typeof senderId)
+    if (senderId > 0) {
+        // 如果是自己发送的，消息就处于右边，不是自己发送的就处于左边
 
-    if (data.user_id > 0) {
-        data.float = data.user_id == login_uid ? 'right' : 'left'
+        data.layout = senderId === login_uid ? 'right' : 'left'
+        console.log('消息布局：',senderId,login_uid,data.layout)
     }
 
     data.isCheck = false

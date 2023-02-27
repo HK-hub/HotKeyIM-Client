@@ -42,6 +42,7 @@ const records = computed(() => dialogueStore.records)
 const loadConfig = reactive({
     status: 0,
     minRecord: 0,
+    minSquence: 0,
 })
 
 const state = reactive({
@@ -60,8 +61,10 @@ const state = reactive({
 const onLoadTalk = () => {
     const data = {
         userId: userId,
+        senderId: userId,
         // 消息锚点id: 查询消息基准id
         anchor: loadConfig.minRecord,
+        sequence: loadConfig.minSquence,
         // record_id : loadConfig.minRecord,
         receiverId: props.receiver_id,
         talkType: props.talk_type,
@@ -72,31 +75,40 @@ const onLoadTalk = () => {
     let scrollHeight = el.scrollHeight
 
     loadConfig.status = 0
-    console.log('获取最新聊天记录请求：',data)
+    console.log('获取最新聊天记录请求：', data)
     const response = ServeTalkRecords(data)
     console.log('获取最新聊天记录：', response)
     response.then(res => {
+        console.log('聊天记录records: ', res.data)
+
         // 防止对话切换过快，数据渲染错误
+        const cond = data.talkType != props.talk_type ||
+            data.receiverId != props.receiver_id;
+        console.log('数据渲染cond: ', cond)
         if (
-            data.talk_type != props.talk_type ||
-            data.receiver_id != props.receiver_id
+            data.talkType != props.talk_type ||
+            data.receiverId != props.receiver_id
         ) {
+            console.log('聊天记录数据渲染错误')
             return
         }
-
-        const records = res.data.rows || []
-
+        // TODO: 聊天记录解析
+        const records = res.data || []
+        console.log('聊天记录格式化：uid=', props.uid)
         records.map(item => formatTalkRecord(props.uid, item))
 
         // 判断是否是初次加载
-        if (data.anchor == 0) {
+        if (data.sequence === 0) {
             dialogueStore.clearDialogueRecord()
         }
 
         if (props.talk_type == 1) {
+            // 好友私聊
             let msgIds = []
             for (const record of records) {
-                if (props.receiver_id === record.user_id && record.is_read === 0) {
+                //
+                if (props.receiver_id === record.senderId && record.signFlag === 1) {
+                    // 接收者是自己，
                     msgIds.push(record.id)
                 }
             }
@@ -107,13 +119,16 @@ const onLoadTalk = () => {
             })
         }
 
-        dialogueStore.unshiftDialogueRecord(records.reverse())
-
+        // TODO 消息逆序了
+        // dialogueStore.unshiftDialogueRecord(records.reverse())
+        dialogueStore.unshiftDialogueRecord(records)
+        console.log('追加消息')
         loadConfig.status = records.length >= res.data.limit ? 1 : 2
         loadConfig.minRecord = res.data.anchor
+        loadConfig.minSquence = res.data.sequence
 
         nextTick(() => {
-            if (data.anchor == 0) {
+            if (data.sequence === 0) {
                 el.scrollTop = el.scrollHeight
             } else {
                 el.scrollTop = el.scrollHeight - scrollHeight
@@ -148,7 +163,7 @@ const isShowTalkTime = (index, datetime) => {
         return true
     }
 
-    let nextDate = records.value[index + 1].created_at.replace(/-/g, '/')
+    let nextDate = records.value[index + 1].createTime.replace(/-/g, '/')
 
     return !(
         parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') ==
@@ -276,7 +291,7 @@ const onUserInfo = uid => {
 const onRowClick = item => {
     if (dialogueStore.isOpenMultiSelect) {
         // 1:文本消息;2:文件消息;3:会话消息;4:代码消息;5:投票消息;6:群公告;7:好友申请;8:登录通知;9:入群消息/退群消息;
-        if ([1, 2, 4].includes(item.msg_type)) {
+        if ([1, 2, 4].includes(item.messageType)) {
             // 需要判断消息类型
             item.isCheck = !item.isCheck
         } else {
@@ -312,7 +327,7 @@ onMounted(() => {
 
             <div class="message-item" v-for="(item, index) in records" :key="item.id">
                 <!-- 群消息 -->
-                <div v-if="item.msg_type == 9" class="message-box">
+                <div v-if="item.messageType == 9" class="message-box">
                     <invite-message :invite="item.invite" @user-info="onUserInfo"/>
                 </div>
 
@@ -328,7 +343,7 @@ onMounted(() => {
                 </div>
 
                 <!-- 系统消息 -->
-                <div v-else-if="item.msg_type == 0" class="message-box">
+                <div v-else-if="item.messageType == 0" class="message-box">
                     <system-text-message :content="item.content"/>
                 </div>
 
@@ -336,7 +351,7 @@ onMounted(() => {
                     v-else
                     class="message-box record-box"
                     :class="{
-            'direction-rt': item.float == 'right',
+            'direction-rt': item.layout == 'right',
             'multi-select': dialogueStore.isOpenMultiSelect,
             'multi-select-check': item.isCheck,
           }"
@@ -369,11 +384,12 @@ onMounted(() => {
                             :class="{ show: talk_type == 2 && item.float == 'left' }"
                         >
               <span v-show="talk_type == 2 && item.float == 'left'">{{
-                      item.friend_remarks || item.nickname
+                      item.friendRemark || item.nickname
                   }}</span>
-                            <span>
-                {{ parseTime(item.created_at, '{m}/{d} {h}:{i}') }}
-              </span>
+                    <span>
+                        <!-- {{ parseTime(item.created_at, '{m}/{d} {h}:{i}') }}-->
+                        {{ item.created_at }}
+                    </span>
                         </div>
 
                         <div
@@ -383,9 +399,9 @@ onMounted(() => {
                         >
                             <!-- 文本消息 -->
                             <text-message
-                                v-if="item.msg_type == 1"
+                                v-if="item.messageType == 1"
                                 :content="item.content"
-                                :float="item.float"
+                                :float="item.layout"
                                 style="max-width: 600px"
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
@@ -468,11 +484,11 @@ onMounted(() => {
 
                             <!-- 预留 -->
                             <div
-                                v-if="talk_type == 1 && item.float == 'right'"
+                                v-if="talk_type == 1 && item.layout == 'right'"
                                 class="read-status"
                             >
                                 <n-icon
-                                    v-if="item.is_read"
+                                    v-if="item.signFlag === 1"
                                     size="18"
                                     color="#65c468"
                                     :component="CheckmarkCircleOutline"
@@ -485,8 +501,8 @@ onMounted(() => {
                     </main>
                 </div>
 
-                <div class="datetime" v-show="isShowTalkTime(index, item.created_at)">
-                    {{ formatTime(item.created_at) }}
+                <div class="datetime" v-show="isShowTalkTime(index, item.createTime)">
+                    {{ formatTime(item.createTime) }}
                 </div>
             </div>
         </div>
