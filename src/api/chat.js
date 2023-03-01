@@ -17,7 +17,7 @@ export const ServeDeleteTalkList = data => {
 
 // 对话列表置顶服务接口
 export const ServeTopTalkList = data => {
-  return post('/api/v1/talk/topping', data)
+  return post('/admin/talk/topping', data)
 }
 
 // 清除聊天消息未读数服务接口

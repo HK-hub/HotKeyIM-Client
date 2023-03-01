@@ -86,7 +86,7 @@ const onTabTalk = data => {
 
     console.log('会话标签切换成功：',dialogueStore)
     // 更新编辑草稿
-    dialogueStore.updateEditorText(data.draft)
+    dialogueStore.updateEditorText(data.draft ? data.draft : '')
 
     // 清空消息未读数
     if (data.unread_num > 0) {
@@ -161,14 +161,18 @@ const onUpdateContactRemark = data => {
 
 // 置顶会话
 const onToTopTalk = data => {
+    // data instance of talk 会话类型
+    console.log('置顶会话：', data)
     ServeTopTalkList({
-        list_id: data.id,
-        type: data.is_top == 0 ? 1 : 2,
+        talkId: data.id,
+        friendId: data.receiver_id,
+        operation: data.top ? 2 : 1,
     }).then(({code}) => {
-        if (code == 200) {
+        if (code === 200) {
+            console.log('置顶会话成功：', data.top === 0 ? 1 : 0)
             talkStore.updateItem({
                 index_name: data.index_name,
-                is_top: data.is_top == 0 ? 1 : 0,
+                top: data.top === 0 ? 1 : 0,
             })
         }
     })
@@ -186,7 +190,7 @@ const onDeleteContact = data => {
             ServeDeleteContact({
                 friend_id: data.receiver_id,
             }).then(({code}) => {
-                if (code == 200) {
+                if (code === 200) {
                     $message.success('删除联系人成功！')
                     onDeleteTalk(data.index_name)
                 } else {

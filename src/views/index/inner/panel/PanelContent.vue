@@ -42,7 +42,7 @@ const records = computed(() => dialogueStore.records)
 const loadConfig = reactive({
     status: 0,
     minRecord: 0,
-    minSquence: 0,
+    minSequence: 0,
 })
 
 const state = reactive({
@@ -64,11 +64,11 @@ const onLoadTalk = () => {
         senderId: userId,
         // 消息锚点id: 查询消息基准id
         anchor: loadConfig.minRecord,
-        sequence: loadConfig.minSquence,
+        sequence: loadConfig.minSequence,
         // record_id : loadConfig.minRecord,
         receiverId: props.receiver_id,
         talkType: props.talk_type,
-        limit: 30,
+        limit: 100,
     }
 
     let el = document.getElementById('lumenChatPanel')
@@ -124,8 +124,9 @@ const onLoadTalk = () => {
         dialogueStore.unshiftDialogueRecord(records)
         console.log('追加消息')
         loadConfig.status = records.length >= res.data.limit ? 1 : 2
-        loadConfig.minRecord = res.data.anchor
-        loadConfig.minSquence = res.data.sequence
+        // TODO 存在消息不能交替打印问题
+        // loadConfig.minRecord = res.data.anchor
+        // loadConfig.minSequence = res.data.sequence
 
         nextTick(() => {
             if (data.sequence === 0) {
@@ -166,14 +167,14 @@ const isShowTalkTime = (index, datetime) => {
     let nextDate = records.value[index + 1].createTime.replace(/-/g, '/')
 
     return !(
-        parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') ==
+        parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') ===
         parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}')
     )
 }
 
 // 窗口滚动事件
 const onPanelScroll = e => {
-    if (e.target.scrollTop == 0 && loadConfig.status == 1) {
+    if (e.target.scrollTop === 0 && loadConfig.status === 1) {
         onLoadTalk()
     }
 
@@ -212,6 +213,9 @@ const onMultiSelect = data => {
 
 // 会话列表右键显示菜单
 const onContextMenu = (e, item) => {
+    // console.log('撤回菜单：', props.uid, item.senderId)
+    // console.log('props.uid === item.senderId', props.uid === item.senderId)
+
     state.dropdown.show = false
     state.dropdown.item = Object.assign({}, item)
     state.dropdown.options = [
@@ -224,14 +228,12 @@ const onContextMenu = (e, item) => {
             label: `撤回`,
             key: 'revoke',
             disabled: (() => {
-                if (props.uid != item.user_id) {
+                if (props.uid !== item.senderId) {
                     return true
                 }
-
-                let datetime = item.created_at.replace(/-/g, '/')
-
+                let datetime = item.createTime.replace(/-/g, '/')
                 let time = new Date().getTime() - Date.parse(datetime)
-
+                // 发消息时间超过2分钟
                 return Math.floor(time / 1000 / 60) > 2
             })(),
         },
@@ -351,7 +353,7 @@ onMounted(() => {
                     v-else
                     class="message-box record-box"
                     :class="{
-            'direction-rt': item.layout == 'right',
+            'direction-rt': item.layout === 'right',
             'multi-select': dialogueStore.isOpenMultiSelect,
             'multi-select-check': item.isCheck,
           }"
@@ -386,7 +388,7 @@ onMounted(() => {
               <span v-show="talk_type == 2 && item.float == 'left'">{{
                       item.friendRemark || item.nickname
                   }}</span>
-                    <span>
+                            <span>
                         <!-- {{ parseTime(item.created_at, '{m}/{d} {h}:{i}') }}-->
                         {{ item.created_at }}
                     </span>
@@ -399,7 +401,7 @@ onMounted(() => {
                         >
                             <!-- 文本消息 -->
                             <text-message
-                                v-if="item.messageType == 1"
+                                v-if="item.messageType === 1"
                                 :content="item.content"
                                 :float="item.layout"
                                 style="max-width: 600px"

@@ -85,8 +85,9 @@ export const useDialogueStore = defineStore('dialogue', {
     // 推送对话记录
     addDialogueRecord(record) {
 
-      // TOOD 需要通过 sequence 排序，保证消息一致性
-      // this.records.splice(index, 0, record)
+      console.log('推送对话记录:', record)
+      //  TODO 需要通过 sequence 排序，保证消息一致性
+      this.records.splice(index, 0, record)
 
       this.records.push(record)
     },
@@ -122,7 +123,7 @@ export const useDialogueStore = defineStore('dialogue', {
     },
 
     setUnreadBubble(value) {
-      if (value == 0) {
+      if (value === 0) {
         this.unreadBubble = 0
       } else {
         this.unreadBubble++

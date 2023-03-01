@@ -44,7 +44,7 @@ const menus = reactive([
     title: '笔记',
   },
   {
-    link: 'https://github.com/gzydong/LumenIM',
+    link: 'https://github.com/hk-hub/HotKeyIM',
     icon: markRaw(LogoGithub),
     external: true,
     title: '源码',

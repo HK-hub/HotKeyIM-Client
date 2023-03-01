@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <div id="logo-name">Lumen IM</div>
+  <div id="logo-name">HotKey IM</div>
 
   <section class="section">
     <router-view />

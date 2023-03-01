@@ -200,6 +200,7 @@ const editorInsertText = text => {
   lastEditRange = selection.getRangeAt(0)
 }
 
+// 编辑器插入表情
 const editorInsertMention = (atid, atname) => {
   let node = document.createElement('span')
   node.className = 'mention'

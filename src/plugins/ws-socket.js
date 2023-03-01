@@ -39,6 +39,7 @@ class WsSocket {
         onError: evt => {},
         onOpen: evt => {},
         onClose: evt => {},
+        onMessage: evt => {},
     }
 
     /**
@@ -116,12 +117,12 @@ class WsSocket {
      * @param {Object} evt Websocket 消息
      */
     onParse(evt) {
-        const { event, content } = JSON.parse(evt.data)
-
+        const { event, message } = JSON.parse(evt.data)
+        console.log('解析接受的消息',evt.data)
         return {
             event: event,
-            data: content,
-            orginData: evt.data,
+            data: message,
+            originData: evt.data,
         }
     }
 
@@ -172,12 +173,15 @@ class WsSocket {
      */
     onMessage(evt) {
         this.lastTime = new Date().getTime()
-
+        console.log('解析消息前:')
         let result = this.onParse(evt)
-
+        // 消息接收后的确认消息回执等
+        console.log('消息确认前:')
+        this.events.onMessage(evt)
+        console.log('onMessage 处理消息：进行消息回调处理', result)
         // 判断消息事件是否被绑定
         if (this.onCallBacks.hasOwnProperty(result.event)) {
-            this.onCallBacks[result.event](result.data, result.orginData)
+            this.onCallBacks[result.event](result.data, result.originData)
         } else {
             console.warn(`WsSocket 消息事件[${result.event}]未绑定...`)
         }

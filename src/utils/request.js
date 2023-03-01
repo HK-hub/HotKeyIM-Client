@@ -31,7 +31,7 @@ const errorHandler = error => {
 // 请求拦截器
 request.interceptors.request.use(config => {
     const token = getAccessToken()
-    console.log('请求拦截：', token)
+    // console.log('请求拦截：', token)
     if (token) {
         // token
         config.headers['Authorization'] = `${token}`
@@ -40,13 +40,16 @@ request.interceptors.request.use(config => {
     // traceId
     const traceId = uuidv4()
     config.headers['traceId'] = traceId;
-    console.log('traceId=', traceId)
+    // console.log('traceId=', traceId)
 
     // sign 签名验证
-    var timestamp = new Date().getTime()
+    let timestamp = new Date().getTime()
     config.headers['X-Time'] = timestamp
-    config.headers['x-Nonce'] = JSON.parse(localStorage.getItem('IM_USERID')).value + '-' +
-        timestamp + '-' + (Math.floor(Math.random()*(99999-1000+1))+1000)
+    let userIdJson = JSON.parse(localStorage.getItem('IM_USERID'))
+    if (userIdJson !== null) {
+        config.headers['x-Nonce'] = userIdJson.value + '-' +
+            timestamp + '-' + (Math.floor(Math.random()*(99999-1000+1))+1000)
+    }
 
     return config
 }, errorHandler)

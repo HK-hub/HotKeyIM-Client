@@ -45,12 +45,13 @@ class Talk extends Base {
    */
   constructor(resource) {
     super()
-
+    console.log('构造talk 消息：', resource)
+    let message = resource.messageBO
     this.sender_id = resource.sender_id
     this.receiver_id = resource.receiver_id
     this.talk_type = resource.talk_type
     this.resource = resource.data
-
+    console.log('构造talk 消息：', resource)
     this.handle()
   }
 
@@ -59,7 +60,7 @@ class Talk extends Base {
    * @returns
    */
   isCurrSender() {
-    return this.sender_id == this.getAccountId()
+    return this.sender_id === this.getAccountId()
   }
 
   /**
@@ -68,7 +69,7 @@ class Talk extends Base {
    * @return String
    */
   getIndexName() {
-    if (this.talk_type == 2) {
+    if (this.talk_type === 2) {
       return `${this.talk_type}_${this.receiver_id}`
     }
 
@@ -81,6 +82,7 @@ class Talk extends Base {
    * 获取聊天列表左侧的对话信息
    */
   getTalkText() {
+    console.log('获取聊天列表左侧的对话信息')
     let text = this.resource.content
 
     switch (this.resource.msg_type) {
@@ -114,11 +116,11 @@ class Talk extends Base {
 
   handle() {
 
+    console.log('talk.handle():')
     // TODO 需要做消息去重处理
-
     if (!this.isCurrSender()) {
       // 判断消息是否来自于我自己，否则会提示消息通知
-      this.showMessageNocice()
+      this.showMessageNotice()
     }
 
     // 判断会话列表是否存在，不存在则创建
@@ -139,10 +141,10 @@ class Talk extends Base {
    * 显示消息提示
    * @returns
    */
-  showMessageNocice() {
+  showMessageNotice() {
     if (useNotifyStore().isLeaveWeb) {
       if (useNotifyStore().isWebNotify) {
-        WebNotify('LumenIM 在线聊天', {
+        WebNotify('HotKeyIM 在线聊天', {
           dir: 'auto',
           lang: 'zh-CN',
           body: '您有新的消息请注意查收！！！',

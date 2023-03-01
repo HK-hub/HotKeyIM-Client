@@ -45,6 +45,12 @@ class Socket {
                 // TODO: 加载会话列表
                 useTalkStore().loadTalkList()
             },
+            // Websocket 接收消息数据回调方法
+            // 此处可以用来做消息确认：
+            onMessage: evt => {
+                let dataJson = JSON.parse(evt.data)
+                console.log('websocket 确认接收消息：', dataJson)
+            },
             // Websocket 断开连接回调方法
             onClose: evt => {
                 // 更新 WebSocket 连接状态

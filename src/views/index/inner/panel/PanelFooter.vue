@@ -53,6 +53,7 @@ const isShowHistory = ref(false)
 const onSendTextEvent = throttle(value => {
     let {data, callBack} = value
 
+    // 发送文本消息
     const res = ServeSendTalkText({
         senderId: userId,
         receiverId: props.receiver_id,
@@ -62,10 +63,12 @@ const onSendTextEvent = throttle(value => {
     console.log('发送文本消息：', res)
     res.then(({code, message}) => {
         if (code == 200) {
+            console.log('更新聊天item: ', props)
             talkStore.updateItem({
                 index_name: props.index_name,
                 draft_text: '',
             })
+            // 追加消息
 
             // 对话列表滚动条置顶
             document.getElementById('talk-session-list').scrollTop = 0

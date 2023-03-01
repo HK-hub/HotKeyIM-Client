@@ -43,11 +43,14 @@ export const useTalkStore = defineStore('talk', {
   actions: {
     // 更新对话节点
     updateItem(params) {
+      // console.log('更新对话节点: this.items=',this.items, params)
       const item = this.items.find(
         item => item.index_name === params.index_name
       )
-
+      // console.log('赛选出来的item=',item)
       item && Object.assign(item, params)
+      item.draft = item.draft_text
+      // console.log('赋值后：', item)
     },
 
     // 新增对话节点

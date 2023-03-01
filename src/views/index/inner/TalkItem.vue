@@ -38,7 +38,7 @@ defineProps({
       </n-avatar>
 
       <div class="top-mask" @click.stop="emit('top-talk', data)">
-        <n-icon :component="data.is_top == 1 ? ArrowDown : ArrowUp" />
+        <n-icon :component="data.top ? ArrowDown : ArrowUp" />
       </div>
     </div>
 
@@ -49,9 +49,9 @@ defineProps({
           <span class="badge" v-show="data.unread_num">
             {{ data.unread_num }}条未读
           </span>
-          <span class="badge top" v-show="data.is_top">TOP</span>
+          <span class="badge top" v-show="data.top">TOP</span>
           <span class="badge roboot" v-show="data.is_robot">BOT</span>
-          <span class="badge group" v-show="data.talk_type == 2">群组</span>
+          <span class="badge group" v-show="data.talk_type === 2">群组</span>
           <span class="disturb" v-show="data.is_disturb">
             <n-icon :component="NotificationsOffOutline" />
           </span>
@@ -60,9 +60,9 @@ defineProps({
       </div>
 
       <div class="content">
-        <template v-if="!active && data.draft_text">
+        <template v-if="!active && data.draft">
           <span class="draft">[草稿]&nbsp;</span>
-          <span v-html="data.draft_text"></span>
+          <span v-html="data.draft"></span>
         </template>
         <template v-else>
           <template v-if="data.is_robot == 0">
