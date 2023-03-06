@@ -43,7 +43,6 @@ export const useTalkStore = defineStore('talk', {
   actions: {
     // 更新对话节点
     updateItem(params) {
-      // console.log('更新对话节点: this.items=',this.items, params)
       const item = this.items.find(
         item => item.index_name === params.index_name
       )
@@ -51,6 +50,8 @@ export const useTalkStore = defineStore('talk', {
       item && Object.assign(item, params)
       item.draft = item.draft_text
       // console.log('赋值后：', item)
+      console.log('更新对话节点: item=', item, params)
+
     },
 
     // 新增对话节点

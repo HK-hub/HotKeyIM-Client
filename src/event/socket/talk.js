@@ -13,6 +13,7 @@ import { ServeClearTalkUnreadNum, ServeCreateTalkList } from '@/api/chat'
 import { useTalkStore } from '@/store/talk'
 import { useDialogueStore } from '@/store/dialogue'
 import { useNotifyStore } from '@/store/notify'
+import {useUserStore} from "@/store/user";
 
 /**
  * 好友状态事件
@@ -47,11 +48,11 @@ class Talk extends Base {
     super()
     console.log('构造talk 消息：', resource)
     let message = resource.messageBO
-    this.sender_id = resource.sender_id
-    this.receiver_id = resource.receiver_id
-    this.talk_type = resource.talk_type
-    this.resource = resource.data
-    console.log('构造talk 消息：', resource)
+    this.sender_id = message.senderId
+    this.receiver_id = message.receiverId
+    this.talk_type = message.chatType
+    this.resource = message
+    console.log('构造talk 完毕消息：', this.sender_id, this.receiver_id, this.talk_type)
     this.handle()
   }
 
@@ -85,10 +86,10 @@ class Talk extends Base {
     console.log('获取聊天列表左侧的对话信息')
     let text = this.resource.content
 
-    switch (this.resource.msg_type) {
+    switch (this.resource.messageType) {
       case 2:
         let file_type = this.resource.file.file_type
-        text = file_type == 1 ? '[图片消息]' : '[文件消息]'
+        text = file_type === 1 ? '[图片消息]' : '[文件消息]'
         break
       case 3:
         text = '[会话记录]'
@@ -116,22 +117,25 @@ class Talk extends Base {
 
   handle() {
 
-    console.log('talk.handle():')
+    console.log('talk.handle():', this.sender_id === this.getAccountId())
     // TODO 需要做消息去重处理
     if (!this.isCurrSender()) {
-      // 判断消息是否来自于我自己，否则会提示消息通知
+      // 判断消息是否来自于我自己，不是来源于自己就会提示消息通知
       this.showMessageNotice()
     }
 
     // 判断会话列表是否存在，不存在则创建
-    if (findTalkIndex(this.getIndexName()) == -1) {
+    if (findTalkIndex(this.getIndexName()) === -1) {
+      console.log('判断会话是否存在：')
       return this.addTalkItem()
     }
 
     // 判断当前是否正在和好友对话
     if (this.isTalk(this.talk_type, this.receiver_id, this.sender_id)) {
+      // 插入会话记录
       this.insertTalkRecord()
     } else {
+      // 目前没有和该好友对话
       this.play()
       this.updateTalkItem()
     }
@@ -147,7 +151,7 @@ class Talk extends Base {
         WebNotify('HotKeyIM 在线聊天', {
           dir: 'auto',
           lang: 'zh-CN',
-          body: '您有新的消息请注意查收！！！',
+          body: '您有新的消息请注意查收!!!',
         })
       }
     } else {
@@ -167,7 +171,7 @@ class Talk extends Base {
     let receiver_id = this.sender_id
     let talk_type = this.talk_type
 
-    if (talk_type == 1 && this.receiver_id != this.getAccountId()) {
+    if (talk_type === 1 && this.receiver_id != this.getAccountId()) {
       receiver_id = this.receiver_id
     } else if (talk_type == 2) {
       receiver_id = this.receiver_id
@@ -188,14 +192,17 @@ class Talk extends Base {
    * 插入对话记录
    */
   insertTalkRecord() {
+    console.log('插入会话记录')
     let record = this.resource
 
     useDialogueStore().addDialogueRecord(
       formatTalkRecord(this.getAccountId(), this.resource)
     )
 
+    // 判断消息是否来自于我
     if (!this.isCurrSender()) {
-      // 推送已读消息
+      // 消息不是来自于我：推送已读消息
+      console.log('消息不是来自于我：推送已读消息')
       setTimeout(() => {
         socket.emit('event_talk_read', {
           receiver_id: this.sender_id,
@@ -210,7 +217,7 @@ class Talk extends Base {
     // 判断的滚动条是否在底部
     let isBottom = Math.ceil(el.scrollTop) + el.clientHeight >= el.scrollHeight
 
-    if (isBottom || record.user_id == this.getAccountId()) {
+    if (isBottom || record.senderId === this.getAccountId()) {
       nextTick(() => {
         el.scrollTop = el.scrollHeight + 1000
       })
@@ -218,16 +225,20 @@ class Talk extends Base {
       useDialogueStore().setUnreadBubble(1)
     }
 
+    // 跟新会话item
     useTalkStore().updateItem({
       index_name: this.getIndexName(),
       msg_text: this.getTalkText(),
       updated_at: parseTime(new Date()),
     })
 
-    if (this.talk_type == 1 && this.getAccountId() !== this.sender_id) {
+    // 好友私聊 && 不是消息发送者
+    if (this.talk_type === 1 && this.getAccountId() !== this.sender_id) {
+      // 清空未读
       ServeClearTalkUnreadNum({
-        talk_type: 1,
-        receiver_id: this.sender_id,
+        talkType: 1,
+        senderId: useUserStore().uid,
+        receiverId: this.sender_id,
       })
     }
   }

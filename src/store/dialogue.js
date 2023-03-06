@@ -87,7 +87,7 @@ export const useDialogueStore = defineStore('dialogue', {
 
       console.log('推送对话记录:', record)
       //  TODO 需要通过 sequence 排序，保证消息一致性
-      this.records.splice(index, 0, record)
+      // this.records.splice(index, 0, record)
 
       this.records.push(record)
     },

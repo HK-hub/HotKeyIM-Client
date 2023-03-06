@@ -91,9 +91,9 @@ const onTabTalk = data => {
     // 清空消息未读数
     if (data.unread_num > 0) {
         ServeClearTalkUnreadNum({
-            talk_type: data.talk_type,
-            receiver_id: data.receiver_id,
-        }).then(() => {
+            talkType: data.talk_type,
+            senderId: null,
+            receiverId: data.receiver_id
             talkStore.updateItem({
                 index_name: data.index_name,
                 unread_num: 0,
