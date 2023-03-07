@@ -94,11 +94,13 @@ const onTabTalk = data => {
             talkType: data.talk_type,
             senderId: null,
             receiverId: data.receiver_id
+        }).then(() => {
             talkStore.updateItem({
                 index_name: data.index_name,
                 unread_num: 0,
             })
         })
+
     }
 
     // 关闭提及功能
