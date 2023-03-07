@@ -26,7 +26,7 @@ const uploadsStore = useUploadsStore()
 const dialogueStore = useDialogueStore()
 const props = defineProps({
     uid: {
-        type: Number,
+        type: String,
         default: 0,
     },
     talk_type: {

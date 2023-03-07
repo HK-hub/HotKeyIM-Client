@@ -68,7 +68,7 @@ const onLoadTalk = () => {
         // record_id : loadConfig.minRecord,
         receiverId: props.receiver_id,
         talkType: props.talk_type,
-        limit: 100,
+        limit: 30,
     }
 
     let el = document.getElementById('lumenChatPanel')
@@ -93,12 +93,12 @@ const onLoadTalk = () => {
             return
         }
         // TODO: 聊天记录解析
-        const records = res.data || []
+        const records = res.data.messageVOList || []
         console.log('聊天记录格式化：uid=', props.uid)
         records.map(item => formatTalkRecord(props.uid, item))
 
         // 判断是否是初次加载
-        if (data.sequence === 0) {
+        if (data.sequence == 0) {
             dialogueStore.clearDialogueRecord()
         }
 
@@ -125,11 +125,12 @@ const onLoadTalk = () => {
         console.log('追加消息')
         loadConfig.status = records.length >= res.data.limit ? 1 : 2
         // TODO 存在消息不能交替打印问题
-        // loadConfig.minRecord = res.data.anchor
-        // loadConfig.minSequence = res.data.sequence
+        loadConfig.minRecord = res.data.anchorId
+        loadConfig.minSequence = res.data.sequence
+        console.log('loadConfig.minRecord,loadConfig.minSequence', loadConfig.minRecord, loadConfig.minSequence)
 
         nextTick(() => {
-            if (data.sequence === 0) {
+            if (data.sequence == 0) {
                 el.scrollTop = el.scrollHeight
             } else {
                 el.scrollTop = el.scrollHeight - scrollHeight
@@ -282,6 +283,7 @@ const onSkipBottom = () => {
 const onReload = () => {
     loadConfig.status = 0
     loadConfig.minRecord = 0
+    loadConfig.minSequence = 0
 
     onLoadTalk()
 }
