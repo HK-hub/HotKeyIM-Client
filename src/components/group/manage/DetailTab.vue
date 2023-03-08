@@ -217,6 +217,7 @@ onMounted(() => {
     <!-- 头像裁剪组件 -->
     <AvatarCropper
         v-if="cropper"
+        :type="2"
         :gid="modelDetail.id"
         @close="cropper = false"
         @success="onUploadAvatar"

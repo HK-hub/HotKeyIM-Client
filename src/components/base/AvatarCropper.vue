@@ -10,10 +10,18 @@ const userId = JSON.parse(localStorage.getItem('IM_USERID')).value
 const emit = defineEmits(['close', 'success'])
 
 const props = defineProps({
+    type: {
+        type: Number,
+        default: 1,
+    },
     gid: {
         type: String,
         default: null,
     },
+    id: {
+        type: String,
+        default: null,
+    }
 })
 
 const state = reactive({
@@ -94,7 +102,7 @@ const onSubmit = () => {
         })
 
         const form = new FormData()
-        form.append('type', 2)
+        form.append('type', props.type)
         form.append('targetId', props.gid)
         form.append('operatorId', userId)
         form.append('file', file)

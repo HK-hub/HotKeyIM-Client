@@ -17,12 +17,12 @@ export const ServeUpdateEmail = data => {
 
 // 修改个人信息服务接口
 export const ServeUpdateUserDetail = data => {
-    return post('/api/v1/users/change/detail', data)
+    return post('/admin/info/change/detail', data)
 }
 
 // 查询用户信息服务接口
-export const ServeGetUserDetail = () => {
-    return get('/api/v1/users/detail')
+export const ServeGetUserDetail = (data) => {
+    return get('/admin/info/detail', data)
 }
 
 // 获取用户相关设置信息
