@@ -25,9 +25,8 @@ const isWebNotify = computed({
     if (val === false) {
       notifyStore.isWebNotify = false
     } else {
-      window.Notification.requestPermission(res => {
-        console.log(res)
-        notifyStore.isWebNotify = 'granted' === res
+      Notification.requestPermission(res => {
+        notifyStore.isWebNotify = ("granted" === res)
       })
     }
   },

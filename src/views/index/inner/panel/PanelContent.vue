@@ -413,10 +413,10 @@ onMounted(() => {
                             <!-- 图片消息 -->
                             <image-message
                                 v-else-if="
-                  item.msg_type == 2 && item.file && item.file.type == 1
+                  item.messageType == 2 && (item.url || item.content) && item.extra.fileSubType == 1
                 "
-                                :src="item.file.url"
-                                :float="item.float"
+                                :src="item.url || item.content"
+                                :float="item.layout"
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
 
@@ -505,6 +505,7 @@ onMounted(() => {
                     </main>
                 </div>
 
+                <!-- 消息发送时间 -->
                 <div class="datetime" v-show="isShowTalkTime(index, item.createTime)">
                     {{ formatTime(item.createTime) }}
                 </div>

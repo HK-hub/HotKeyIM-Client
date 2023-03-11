@@ -66,12 +66,12 @@ export const ServeSendTalkCodeBlock = data => {
 
 // 发送聊天文件服务接口
 export const ServeSendTalkFile = data => {
-  return post('/api/v1/talk/message/file', data)
+  return post('/admin/message/send/file', data)
 }
 
 // 发送聊天图片服务接口
 export const ServeSendTalkImage = data => {
-  return upload('/api/v1/talk/message/image', data)
+  return upload('/admin/message/send/image', data)
 }
 
 // 发送表情包服务接口

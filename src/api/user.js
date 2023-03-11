@@ -29,3 +29,32 @@ export const ServeGetUserDetail = (data) => {
 export const ServeGetUserSetting = userId => {
     return get('/admin/user/' + userId)
 }
+
+
+// 绑定github
+export const ServeBindUserGithub = () => {
+
+}
+
+// 绑定gitee
+export const ServeBindUserGitee = () => {
+
+}
+
+
+// 绑定QQ
+export const ServeBindUserQQ = () => {
+
+}
+
+// 绑定微信
+export const ServeBindUserWechat = () => {
+
+}
+
+// 绑定钉钉
+export const ServeBindUserDingtalk = () => {
+
+}
+
+

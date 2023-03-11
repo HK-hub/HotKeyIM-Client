@@ -20,6 +20,7 @@ defineProps({
  * @param {Number} width
  */
 const img = (src, width = 200) => {
+    console.log(src,width)
   const info = getImageInfo(src)
 
   if (info.width < width) {

@@ -69,7 +69,9 @@ const onChangeDetail = () => {
 
 const onUploadAvatar = avatar => {
     cropper.value = false
-    detail.avatar = avatar
+    console.log('上传头像成功,新的头像为：', avatar)
+    detail.avatar = avatar + '?t=' + Date.now()
+    console.log('detail 详细信息：',detail)
 }
 </script>
 

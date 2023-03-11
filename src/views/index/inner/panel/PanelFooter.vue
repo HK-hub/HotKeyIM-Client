@@ -87,8 +87,9 @@ const onSendTextEvent = throttle(value => {
 const onSendImageEvent = ({data, callBack}) => {
     let fileData = new FormData()
 
-    fileData.append('talk_type', props.talk_type)
-    fileData.append('receiver_id', props.receiver_id)
+    fileData.append('talkType', props.talk_type)
+    fileData.append('senderId', userId)
+    fileData.append('receiverId', props.receiver_id)
     fileData.append('image', data)
 
     const resp = ServeSendTalkImage(fileData)
@@ -119,12 +120,14 @@ const onSendCodeEvent = ({data, callBack}) => {
     })
 }
 
+// 发送文件消息
 const onSendFileEvent = ({data}) => {
     let maxsize = 100 * 1024 * 1024
     if (data.size > maxsize) {
         return $message.info('上传文件不能超过100M！！！')
     }
 
+    // 初始化分片上传
     uploadsStore.initUploadFile(
         data,
         props.talk_type,
