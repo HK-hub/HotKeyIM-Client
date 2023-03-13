@@ -412,9 +412,7 @@ onMounted(() => {
 
                             <!-- 图片消息 -->
                             <image-message
-                                v-else-if="
-                  item.messageType == 2 && (item.url || item.content) && item.extra.fileSubType == 1
-                "
+                                v-else-if="item.messageType === 2 && (item.url || item.content) && item.extra.fileSubType === 1"
                                 :src="item.url || item.content"
                                 :float="item.layout"
                                 @contextmenu.prevent="onContextMenu($event, item)"

@@ -127,6 +127,8 @@ const onSendFileEvent = ({data}) => {
         return $message.info('上传文件不能超过100M！！！')
     }
 
+    console.log('会话talk 属性：',dialogueStore.talk )
+
     // 初始化分片上传
     uploadsStore.initUploadFile(
         data,
