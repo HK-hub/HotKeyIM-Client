@@ -1,16 +1,13 @@
 import {defineStore} from 'pinia'
 import SparkMD5 from 'spark-md5'
 import {ServeFindFileSplitInfo, ServeFileSubareaUpload} from '@/api/upload'
-import {ServeSendTalkFile} from '@/api/chat'
+import {ServerTransferBySeconds, ServeSendTalkFile} from '@/api/chat'
 
 const message = window.$message
 
 // 登录用户
 const userId = JSON.parse(localStorage.getItem('IM_USERID')).value
 
-
-// 计算大文件的md5值
-import SparkMD5 from 'spark-md5';
 
 /**
  * 计算文件Md5
@@ -35,9 +32,9 @@ function computeFileMD5(file) {
             if (currentChunk < chunks) {
                 loadNext();
             } else {
-                console.log('finished loading');
                 let md5 = spark.end(); //最终md5值
                 spark.destroy(); //释放缓存
+                console.log('finished loading:', md5);
                 resolve(md5);
             }
         };
@@ -60,7 +57,7 @@ function computeFileMD5(file) {
 
 
 // 处理拆分上传文件
-function fileSlice(file, uploadId, eachSize) {
+function fileSlice(file, uploadId, eachSize, token) {
     const splitNum = Math.ceil(file.size / eachSize) // 分片总数
     const items = []
 
@@ -74,7 +71,8 @@ function fileSlice(file, uploadId, eachSize) {
         form.append('upload_id', uploadId)
         form.append('split_index', i)
         form.append('split_num', splitNum)
-
+        form.append('token', token)
+        form.append('originalFileName', file.name)
         items.push(form)
     }
 
@@ -110,7 +108,7 @@ export const useUploadsStore = defineStore('uploads', {
                 hash: fileMD5,
                 uploaderId: userId
             }).then(res => {
-                /*if (res.code == 200) {
+                if (res.code == 200) {
                     // const {upload_id, split_size} = res.data
                     const upload_id = res.data.uploadId
                     const split_size = res.data.splitSize
@@ -120,11 +118,19 @@ export const useUploadsStore = defineStore('uploads', {
                     if (enableTransferBySeconds === true) {
                         // 使用秒传替代
                         console.log('使用秒传功能: ')
+                        ServerTransferBySeconds({
+                            fileName: file.name,
+                            fileSize: file.size,
+                            md5: fileMD5,
+                            hash: fileMD5,
+                            uploaderId: userId,
+                            token: token
+                        })
+                        // 发送文件消息
                         ServeSendTalkFile({
-                            uploadId: upload_id,
-                            receiverId: receiverId,
-                            talk_type: talkType,
-                            originalFileName: file.name,
+                            upload_id: item.upload_id,
+                            receiver_id: item.receiver_id,
+                            talk_type: item.talk_type,
                         })
                     } else {
                         // 构建待上传分片
@@ -136,7 +142,7 @@ export const useUploadsStore = defineStore('uploads', {
                             uploadIndex: 0,
                             percentage: 0,
                             status: 0, // 文件上传状态 0:等待上传 1:上传中 2:上传完成 3:网络异常
-                            files: fileSlice(file, upload_id, split_size),
+                            files: fileSlice(file, upload_id, split_size, token),
                             avatar: '',
                             username: username,
                             userId: userId,
@@ -148,7 +154,7 @@ export const useUploadsStore = defineStore('uploads', {
                     }
                 } else {
                     message.error(res.message)
-                }*/
+                }
             })
         },
 
@@ -160,7 +166,7 @@ export const useUploadsStore = defineStore('uploads', {
         // 触发上传
         triggerUpload(uploadId) {
             const item = this.findItem(uploadId)
-
+            // 待上传分片
             let form = item.files[item.uploadIndex]
 
             item.status = 1
@@ -190,6 +196,7 @@ export const useUploadsStore = defineStore('uploads', {
 
         // 发送上传消息
         sendUploadMessage(item) {
+            // 合并文件分片
             ServeSendTalkFile({
                 upload_id: item.upload_id,
                 receiver_id: item.receiver_id,

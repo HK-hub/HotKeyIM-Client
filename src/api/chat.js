@@ -69,6 +69,11 @@ export const ServeSendTalkFile = data => {
   return post('/admin/message/send/file', data)
 }
 
+// 秒传功能
+export const ServerTransferBySeconds = data => {
+  return post('/admin/upload/file/seconds', data)
+}
+
 // 发送聊天图片服务接口
 export const ServeSendTalkImage = data => {
   return upload('/admin/message/send/image', data)
