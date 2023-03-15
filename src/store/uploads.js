@@ -68,9 +68,9 @@ function fileSlice(file, uploadId, eachSize, token) {
 
         const form = new FormData()
         form.append('file', file.slice(start, end))
-        form.append('upload_id', uploadId)
-        form.append('split_index', i)
-        form.append('split_num', splitNum)
+        form.append('uploadId', uploadId)
+        form.append('splitIndex', i)
+        form.append('splitNum', splitNum)
         form.append('token', token)
         form.append('originalFileName', file.name)
         items.push(form)
@@ -106,7 +106,7 @@ export const useUploadsStore = defineStore('uploads', {
                 fileSize: file.size,
                 md5: fileMD5,
                 hash: fileMD5,
-                uploaderId: userId
+                uploaderId: userId,
             }).then(res => {
                 if (res.code == 200) {
                     // const {upload_id, split_size} = res.data
@@ -136,6 +136,7 @@ export const useUploadsStore = defineStore('uploads', {
                         // 构建待上传分片
                         this.items.unshift({
                             file: file,
+                            fileName: file.name,
                             talk_type: talkType,
                             receiver_id: receiverId,
                             upload_id: upload_id,
@@ -168,7 +169,7 @@ export const useUploadsStore = defineStore('uploads', {
             const item = this.findItem(uploadId)
             // 待上传分片
             let form = item.files[item.uploadIndex]
-
+            console.log('待上传分片：', item, form)
             item.status = 1
 
             ServeFileSubareaUpload(form)
@@ -198,9 +199,12 @@ export const useUploadsStore = defineStore('uploads', {
         sendUploadMessage(item) {
             // 合并文件分片
             ServeSendTalkFile({
-                upload_id: item.upload_id,
-                receiver_id: item.receiver_id,
-                talk_type: item.talk_type,
+                senderId: userId,
+                fileUploadId: item.upload_id,
+                receiverId: item.receiver_id,
+                talkType: item.talk_type,
+                originalFileName: item.fileName,
+                size: item.file.size
             })
         },
     },

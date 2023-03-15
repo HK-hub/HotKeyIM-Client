@@ -10,7 +10,7 @@ defineProps({
   },
   address: {
     type: String,
-    default: '中国 河北省 张家口市 电信',
+    default: '中国 重庆市 巴南区 电信',
   },
   platform: {
     type: String,
