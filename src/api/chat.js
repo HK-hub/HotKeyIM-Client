@@ -61,7 +61,7 @@ export const ServeSendTalkText = data => {
 
 // 发送代码块消息服务接口
 export const ServeSendTalkCodeBlock = data => {
-  return post('/api/v1/talk/message/code', data)
+  return post('/admin/message/send/code', data)
 }
 
 // 发送聊天文件服务接口

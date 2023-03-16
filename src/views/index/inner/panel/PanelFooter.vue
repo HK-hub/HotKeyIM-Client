@@ -107,12 +107,14 @@ const onSendImageEvent = ({data, callBack}) => {
 // 发送代码消息
 const onSendCodeEvent = ({data, callBack}) => {
     ServeSendTalkCodeBlock({
-        receiver_id: props.receiver_id,
-        talk_type: props.talk_type,
+        senderId: userId,
+        receiverId: props.receiver_id,
+        talkType: props.talk_type,
         code: data.code,
-        lang: data.lang,
-    }).then(({code, message}) => {
-        if (code == 200) {
+        language: data.lang,
+        name: data.name,
+    }).then(res => {
+        if (res.code == 200 && res.success) {
             callBack(true)
         } else {
             $message.warning(message)
@@ -125,6 +127,24 @@ const onSendFileEvent = ({data}) => {
     let maxsize = 100 * 1024 * 1024
     if (data.size > maxsize) {
         return $message.info('上传文件不能超过100M！！！')
+    }
+
+    console.log('会话talk 属性：',dialogueStore.talk )
+
+    // 初始化分片上传
+    uploadsStore.initUploadFile(
+        data,
+        props.talk_type,
+        props.receiver_id,
+        dialogueStore.talk.username
+    )
+}
+
+// 发送语音消息
+const onSendVoiceEvent = ({data}) => {
+    let maxsize = 100 * 1024 * 1024
+    if (data.size > maxsize) {
+        return $message.info('语音通话！！！')
     }
 
     console.log('会话talk 属性：',dialogueStore.talk )
@@ -192,6 +212,7 @@ const evnets = {
     image_event: onSendImageEvent,
     code_event: onSendCodeEvent,
     file_event: onSendFileEvent,
+    voice_event: onSendVoiceEvent,
     input_event: onInputEvent,
     vote_event: onSendVoteEvent,
     emoticon_event: onSendEmoticonEvent,

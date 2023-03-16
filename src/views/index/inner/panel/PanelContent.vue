@@ -421,9 +421,8 @@ onMounted(() => {
                             <!-- 音频文件预留 -->
                             <audio-message
                                 v-else-if="
-                  item.messageType == 2 && item.file && item.file.type == 2
-                "
-                                :src="item.file.url"
+                  item.messageType == 2 && item.file && item.extra.fileSubType == 2"
+                                :src="item.url || item.extra.url"
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
 
@@ -441,7 +440,7 @@ onMounted(() => {
 
                             <!-- 会话记录消息 -->
                             <forward-message
-                                v-else-if="item.msg_type == 3"
+                                v-else-if="item.messageType == 10"
                                 :record-id="item.id"
                                 :records="item.forward.list"
                                 :num="item.forward.num"
@@ -450,9 +449,10 @@ onMounted(() => {
 
                             <!-- 代码块消息 -->
                             <code-message
-                                v-else-if="item.msg_type == 4"
-                                :code="item.code_block.code"
-                                :lang="item.code_block.lang"
+                                v-else-if="item.messageType == 3"
+                                :code="item.content || item.extra.code"
+                                :lang="item.extra.lang"
+                                :name="item.extra.name"
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
 
