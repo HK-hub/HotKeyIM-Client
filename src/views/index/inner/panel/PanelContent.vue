@@ -421,7 +421,7 @@ onMounted(() => {
                             <!-- 音频文件预留 -->
                             <audio-message
                                 v-else-if="
-                  item.messageType == 2 && item.file && item.extra.fileSubType == 2"
+                  item.messageType == 6 && item.extra.url && item.extra.fileSubType == 2"
                                 :src="item.url || item.extra.url"
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
