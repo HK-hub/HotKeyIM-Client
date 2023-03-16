@@ -128,9 +128,12 @@ export const useUploadsStore = defineStore('uploads', {
                         })
                         // 发送文件消息
                         ServeSendTalkFile({
-                            upload_id: item.upload_id,
-                            receiver_id: item.receiver_id,
-                            talk_type: item.talk_type,
+                            senderId: userId,
+                            fileUploadId: item.upload_id,
+                            receiverId: item.receiver_id,
+                            talkType: item.talk_type,
+                            originalFileName: item.fileName,
+                            size: item.file.size
                         })
                     } else {
                         // 构建待上传分片
@@ -149,7 +152,7 @@ export const useUploadsStore = defineStore('uploads', {
                             userId: userId,
                             token: token,
                         })
-
+                        // 触发上传
                         this.triggerUpload(upload_id)
                         this.isShow = true
                     }
@@ -179,8 +182,8 @@ export const useUploadsStore = defineStore('uploads', {
 
                         if (item.uploadIndex === item.files.length) {
                             item.status = 2
-                            item.percentage = 100
                             this.sendUploadMessage(item)
+                            item.percentage = 100
                         } else {
                             let percentage = (item.uploadIndex / item.files.length) * 100
                             item.percentage = percentage.toFixed(1)

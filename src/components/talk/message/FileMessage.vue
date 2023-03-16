@@ -1,6 +1,6 @@
 <script setup>
 import { fileFormatSize } from '@/utils/strings'
-import { download } from '@/utils/functions'
+import { download, preview } from '@/utils/functions'
 
 defineProps({
   recordId: {
@@ -36,7 +36,7 @@ defineProps({
     </div>
     <div class="footer">
       <a @click="download(recordId)">下载</a>
-      <a>在线预览</a>
+      <a @click="preview(recordId)">在线预览</a>
     </div>
   </section>
 </template>

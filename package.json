@@ -22,7 +22,9 @@
         "uuid": "^9.0.0",
         "vue": "^3.2.25",
         "vue-cropper": "^1.0.2",
-        "vue-router": "^4.0.12"
+        "vue-pdf-embed": "^1.1.5",
+        "vue-router": "^4.0.12",
+        "vue3-pdfjs": "^0.1.6"
     },
     "devDependencies": {
         "@vicons/antd": "^0.12.0",
