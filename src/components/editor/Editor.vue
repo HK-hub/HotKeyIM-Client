@@ -2,9 +2,11 @@
 import {reactive, ref, markRaw, computed, onMounted} from 'vue'
 import {useDialogueStore} from '@/store/dialogue'
 import {useEditorStore} from '@/store/editor'
+
 import {NPopover} from 'naive-ui'
 import {
     HappyOutline,
+    LocationOutline,
     ImageOutline,
     MicOutline,
     VideocamOutline,
@@ -13,7 +15,7 @@ import {
     PodiumOutline,
     TimeOutline,
 } from '@vicons/ionicons5'
-import {PhoneVoice} from '@vicons/carbon'
+import {PhoneVoice, MediaCast,ChevronSortDown} from '@vicons/carbon'
 import {emitCall} from '@/utils/common'
 import MeEditorImage from './MeEditorImage.vue'
 import MeEditorVote from './MeEditorVote.vue'
@@ -58,27 +60,27 @@ onMounted(() => {
     // 粘贴事件
     editor.addEventListener('paste', e => {
 
-        console.log('粘贴事件e:',e)
+        console.log('粘贴事件e:', e)
         e.stopPropagation();
         e.preventDefault();
 
         const cbd = e.clipboardData;
         const ua = window.navigator.userAgent;
         // 如果剪切板没有数据直接返回
-        if ( !(e.clipboardData && e.clipboardData.items) ) {
-            return ;
+        if (!(e.clipboardData && e.clipboardData.items)) {
+            return;
         }
 
         // Mac平台下Chrome49版本以下 复制Finder中的文件的Bug Hack掉
-        if(cbd.items && cbd.items.length === 2 && cbd.items[0].kind === "string" && cbd.items[1].kind === "file" &&
+        if (cbd.items && cbd.items.length === 2 && cbd.items[0].kind === "string" && cbd.items[1].kind === "file" &&
             cbd.types && cbd.types.length === 2 && cbd.types[0] === "text/plain" && cbd.types[1] === "Files" &&
-            ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49){
+            ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49) {
             return;
         }
 
         // 粘贴数据类型判断
-        const item = cbd.items[cbd.items.length -1];
-        if(item.kind == 'file'){
+        const item = cbd.items[cbd.items.length - 1];
+        if (item.kind == 'file') {
             // 判断是否是图片类型
             if (!item.type.match('^image/')) {
                 // 不是图片
@@ -119,8 +121,8 @@ onMounted(() => {
             image.className = 'editor-paste-image'
             image.style.maxWidth = '50%'
             image.style.maxHeight = '50%'
-            reader.onload = (function(aImg) {
-                return function(e) {
+            reader.onload = (function (aImg) {
+                return function (e) {
                     aImg.src = e.target.result;
                 };
             })(image);
@@ -130,10 +132,8 @@ onMounted(() => {
             lastEditRange.collapse(false)
             lastSelection.removeAllRanges()
             lastSelection.addRange(lastEditRange)
-            // editor.appendChild(image);
-
-            /*-----------------------不与后台进行交互 直接预览end-----------------------*/
-        } else if (item.kind == 'string'){
+        } else if (item.kind == 'string') {
+            // 文本内容
             var text = '', event = (e.originalEvent || e);
             if (event.clipboardData && event.clipboardData.getData) {
                 text = event.clipboardData.getData('text/plain');
@@ -154,6 +154,13 @@ onMounted(() => {
 const isShowEditorVote = ref(false)
 const isShowEditorCode = ref(false)
 const isShowEditorRecorder = ref(false)
+// 语音通话
+const isShowEditorVoice = ref(false)
+// 视频通话
+const isShowEditorVideo = ref(false)
+const isShowEditorLocation = ref(false)
+// 多媒体：截图，视频录制，白板演示，屏幕控制
+const isShowEditorMultimedia = ref(false)
 const fileImageRef = ref(null)
 const uploadFileRef = ref(null)
 const emoticonRef = ref(null)
@@ -391,7 +398,7 @@ const navs = reactive([
         icon: markRaw(PhoneVoice),
         show: true,
         click: () => {
-            isShowEditorRecorder.value = true
+            isShowEditorVoice.value = true
         },
     },
     {
@@ -399,15 +406,25 @@ const navs = reactive([
         icon: markRaw(VideocamOutline),
         show: true,
         click: () => {
-            isShowEditorRecorder.value = true
+            isShowEditorVideo.value = true
         },
     },
-    // {
-    //   title: '地理位置',
-    //   icon: markRaw(LocationOutline),
-    //   show: true,
-    //   click: () => {},
-    // },
+    {
+        title: '多媒体',
+        icon: markRaw(MediaCast),
+        show: true,
+        click: () => {
+            isShowEditorMultimedia.value = true
+        },
+    },
+    {
+        title: '地理位置',
+        icon: markRaw(LocationOutline),
+        show: true,
+        click: () => {
+            isShowEditorLocation.value = true
+        },
+    },
     {
         title: '群投票',
         icon: markRaw(PodiumOutline),
@@ -442,6 +459,7 @@ const onMention = (id, name) => {
         </aside>
 
         <section class="el-container is-vertical">
+
             <header class="el-header toolbar bdr-t bdr-b">
                 <div class="tools">
                     <n-popover
@@ -470,6 +488,7 @@ const onMention = (id, name) => {
                         <MeEditorEmoticon @on-select="onEmoticonEvent"/>
                     </n-popover>
 
+                    <!--消息类型选择-->
                     <div
                         class="item pointer"
                         v-for="nav in navs"
@@ -484,6 +503,7 @@ const onMention = (id, name) => {
                 <div class="tips">按Enter发送 / Shift+Enter 换行</div>
             </header>
 
+            <!-- 文本输入框 -->
             <main class="el-main o-hidden height100">
                 <div
                     id="me-editor"
@@ -530,10 +550,13 @@ const onMention = (id, name) => {
         @on-submit="onRecorderEvent"
         @close="isShowEditorRecorder = false"
     />
+
+
 </template>
 <style lang="less" scoped>
 .editor {
     height: 100%;
+
     .toolbar {
         height: 38px;
         display: flex;

@@ -12,5 +12,11 @@ export const ServePreviewRecordFile = data => {
 }
 
 
+// 粘贴图片到编辑器上传
+export const ServePasteImage = data => {
+    return post('/admin/upload/paste/image', data)
+}
+
+
 
 
