@@ -55,8 +55,99 @@ onMounted(() => {
     editor.onclick = fn // 编辑框点击事件
     editor.onkeyup = fn // 编辑框按键弹起事件
 
+    // 粘贴事件
     editor.addEventListener('paste', e => {
-        console.log('e', e)
+
+        console.log('粘贴事件e:',e)
+        e.stopPropagation();
+        e.preventDefault();
+
+        const cbd = e.clipboardData;
+        const ua = window.navigator.userAgent;
+        // 如果剪切板没有数据直接返回
+        if ( !(e.clipboardData && e.clipboardData.items) ) {
+            return ;
+        }
+
+        // Mac平台下Chrome49版本以下 复制Finder中的文件的Bug Hack掉
+        if(cbd.items && cbd.items.length === 2 && cbd.items[0].kind === "string" && cbd.items[1].kind === "file" &&
+            cbd.types && cbd.types.length === 2 && cbd.types[0] === "text/plain" && cbd.types[1] === "Files" &&
+            ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49){
+            return;
+        }
+
+        // 粘贴数据类型判断
+        const item = cbd.items[cbd.items.length -1];
+        if(item.kind == 'file'){
+            // 判断是否是图片类型
+            if (!item.type.match('^image/')) {
+                // 不是图片
+                $message.warning('不支持粘贴该类型:' + item.type)
+                return;
+            }
+            const blob = item.getAsFile();
+            if (blob.size === 0) {
+                return;
+            }
+            // blob 就是从剪切板获得的文件 可以进行上传或其他操作
+            /*-----------------------与后台进行交互 start-----------------------*/
+            /*var data = new FormData();
+            data.append('discoverPics', blob);
+            $.ajax({
+                url: '/discover/addDiscoverPicjson.htm',
+                type: 'POST',
+                cache: false,
+                data: data,
+                processData: false,
+                contentType: false,
+                success:function(res){
+                    var obj = JSON.parse(res);
+                    var wrap = $('#editDiv');
+                    var file = obj.data.toString();
+                    var img = document.createElement("img");
+                    img.src = file;
+                    wrap.appendChild(img);
+                },error:function(){
+
+                }
+            })*/
+            /*-----------------------与后台进行交互 end-----------------------*/
+            /*-----------------------不与后台进行交互 直接预览start-----------------------*/
+            const reader = new FileReader();
+
+            const image = document.createElement('img')
+            image.className = 'editor-paste-image'
+            image.style.maxWidth = '50%'
+            image.style.maxHeight = '50%'
+            reader.onload = (function(aImg) {
+                return function(e) {
+                    aImg.src = e.target.result;
+                };
+            })(image);
+            reader.readAsDataURL(blob);
+
+            lastEditRange.insertNode(image)
+            lastEditRange.collapse(false)
+            lastSelection.removeAllRanges()
+            lastSelection.addRange(lastEditRange)
+            // editor.appendChild(image);
+
+            /*-----------------------不与后台进行交互 直接预览end-----------------------*/
+        } else if (item.kind == 'string'){
+            var text = '', event = (e.originalEvent || e);
+            if (event.clipboardData && event.clipboardData.getData) {
+                text = event.clipboardData.getData('text/plain');
+            } else if (window.clipboardData && window.clipboardData.getData) {
+                text = window.clipboardData.getData('Text');
+            }
+            if (document.queryCommandSupported('insertText')) {
+                document.execCommand('insertText', false, text);
+            } else {
+                document.execCommand('paste', false, text);
+            }
+        } else {
+            $message.warning('不支持粘贴该类型')
+        }
     })
 })
 
@@ -396,7 +487,7 @@ const onMention = (id, name) => {
             <main class="el-main o-hidden height100">
                 <div
                     id="me-editor"
-                    contenteditable="plaintext-only"
+                    contenteditable="true"
                     @keydown="onKeydownEvent($event)"
                     @input="onInputEvent($event)"
                     placeholder="你想要说点什么呢..."
@@ -443,7 +534,6 @@ const onMention = (id, name) => {
 <style lang="less" scoped>
 .editor {
     height: 100%;
-
     .toolbar {
         height: 38px;
         display: flex;
@@ -510,6 +600,7 @@ const onMention = (id, name) => {
     font-size: 15px;
     overflow-y: auto;
     color: #464545;
+
     padding: 8px;
     box-sizing: border-box;
     white-space: pre-wrap;
@@ -518,6 +609,10 @@ const onMention = (id, name) => {
     -webkit-user-select: text;
     cursor: text;
     outline: none;
+
+    .editor-paste-image {
+
+    }
 }
 
 #me-editor[contenteditable]:empty:before {
@@ -530,4 +625,5 @@ const onMention = (id, name) => {
 #me-editor[contenteditable]:focus {
     content: none;
 }
+
 </style>
