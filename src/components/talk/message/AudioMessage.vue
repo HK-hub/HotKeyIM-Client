@@ -8,12 +8,21 @@ import {
     Sync,
     LanguageOutline,
 } from '@vicons/ionicons5'
+import {ServeAudioToText, ServePreviewRecordFile} from '@/api/file'
 
 defineProps({
     src: {
         type: String,
         default: '',
     },
+    recordId: {
+        type: String,
+        default: '',
+    },
+})
+
+const audioText = reactive({
+    text: '',
 })
 
 const audioRef = ref(null)
@@ -59,6 +68,30 @@ const onTimeUpdate = () => {
         state.progress = (audio.currentTime / audio.duration) * 100
     }
 }
+
+// 文本转语音
+const onVoiceToText = (record_id) => {
+    textRef.value = !textRef.value
+    console.log('开启文本转语音: ', record_id)
+
+    // 获取语音转文本后的内容
+    if (textRef.value === true) {
+        ServeAudioToText({
+            recordId: record_id,
+            token: 'token'
+        }).then(res => {
+            if (res.code == 200 && res.success === true) {
+                // 语音识别成功
+                console.log('语音识别成功：', res.data)
+                audioText.text = res.data
+            } else {
+                $message.warning(res.data || res.message)
+                audioText.text = '语音识别失败!'
+            }
+        })
+    }
+}
+
 
 const getCurrDuration = computed(() => formatSeconds(state.currentTime))
 
@@ -134,7 +167,7 @@ function formatSeconds(value) {
             <div class="text">
                 <n-icon size="12" :component="HeadsetOutline"/>
                 <span>{{ getCurrDuration }} / {{ getTotalDuration }}</span>
-                <n-button text secondary size="tiny" ghost color="blue">
+                <n-button text secondary size="tiny" ghost color="blue" @click="onVoiceToText(recordId)">
                     <n-icon size="15" :component="LanguageOutline"/>
                 </n-button>
             </div>
@@ -147,8 +180,8 @@ function formatSeconds(value) {
             </div>
         </div>
     </div>
-    <div class="audio-message" v-if="textRef">
-       <span>文本转语音</span>
+    <div class="audio-text-content" v-if="textRef">
+       <span>{{ audioText.text }}</span>
     </div>
 </template>
 <style lang="less" scoped>
@@ -229,6 +262,18 @@ function formatSeconds(value) {
         }
     }
 }
+
+.audio-text-content {
+    width: 200px;
+    height: 60px;
+    border-radius: 5px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ff5722;
+    overflow: hidden;
+}
+
 
 @-webkit-keyframes spin {
     from {

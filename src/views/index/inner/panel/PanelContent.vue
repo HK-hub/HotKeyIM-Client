@@ -423,6 +423,7 @@ onMounted(() => {
                                 v-else-if="
                   item.messageType == 6 && item.extra.url && item.extra.fileSubType == 2"
                                 :src="item.url || item.extra.url"
+                                :recordId = item.id
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
 

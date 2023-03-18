@@ -17,6 +17,10 @@ export const ServePasteImage = data => {
     return post('/admin/upload/paste/image', data)
 }
 
+// 文本转语音
+export const ServeAudioToText = data => {
+    return post('/admin/record/audio/recognition', data)
+}
 
 
 
