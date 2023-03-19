@@ -72,6 +72,7 @@ const onLoadTalk = () => {
     }
 
     let el = document.getElementById('lumenChatPanel')
+    console.log('lumenChatPanel=',el)
     let scrollHeight = el.scrollHeight
 
     loadConfig.status = 0

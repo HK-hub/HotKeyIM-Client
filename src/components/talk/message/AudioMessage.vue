@@ -72,6 +72,7 @@ const onTimeUpdate = () => {
 // 文本转语音
 const onVoiceToText = (record_id) => {
     textRef.value = !textRef.value
+    audioText.text = ''
     console.log('开启文本转语音: ', record_id)
 
     // 获取语音转文本后的内容
