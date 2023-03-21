@@ -69,7 +69,7 @@ export function preview(cr_id) {
         if (res.code == 200 && res.success) {
             try {
                 const url = res.data; //要预览文件的访问地址
-                window.open('http://127.0.0.1:8012/preview/onlinePreview?url='+encodeURIComponent(Base64.encode(url)));
+                window.open('http://47.120.6.12:8012/onlinePreview?url='+encodeURIComponent(Base64.encode(url)));
             } catch (e) {}
         } else {
             $message.warning(res.data || res.message)

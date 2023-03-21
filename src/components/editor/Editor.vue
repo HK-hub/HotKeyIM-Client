@@ -3,7 +3,7 @@ import {reactive, ref, markRaw, computed, onMounted} from 'vue'
 import {useDialogueStore} from '@/store/dialogue'
 import {useEditorStore} from '@/store/editor'
 
-import {NPopover} from 'naive-ui'
+import {NPopover, NDialog} from 'naive-ui'
 import {
     HappyOutline,
     LocationOutline,
@@ -15,7 +15,7 @@ import {
     PodiumOutline,
     TimeOutline,
 } from '@vicons/ionicons5'
-import {PhoneVoice, MediaCast,ChevronSortDown} from '@vicons/carbon'
+import {PhoneVoice, MediaCast, ChevronSortDown} from '@vicons/carbon'
 import {emitCall} from '@/utils/common'
 import MeEditorImage from './MeEditorImage.vue'
 import MeEditorVote from './MeEditorVote.vue'
@@ -23,6 +23,8 @@ import MeEditorEmoticon from './MeEditorEmoticon.vue'
 import MeEditorCode from './MeEditorCode.vue'
 import MeEditorRecorder from './MeEditorRecorder.vue'
 import MeMention from './MeMention.vue'
+import MeVideoCaller from './MeVideoCaller.vue'
+
 
 const emit = defineEmits(['editor-event'])
 const dialogueStore = useDialogueStore()
@@ -155,7 +157,7 @@ const isShowEditorVote = ref(false)
 const isShowEditorCode = ref(false)
 const isShowEditorRecorder = ref(false)
 // 语音通话
-const isShowEditorVoice = ref(false)
+// const isShowEditorVoice = ref(false)
 // 视频通话
 const isShowEditorVideo = ref(false)
 const isShowEditorLocation = ref(false)
@@ -165,6 +167,10 @@ const fileImageRef = ref(null)
 const uploadFileRef = ref(null)
 const emoticonRef = ref(null)
 
+// 谈话类型
+const conversationType = reactive({
+    type: 1 // 默认类型
+})
 const imagePreview = reactive({
     show: false,
     file: null,
@@ -398,7 +404,10 @@ const navs = reactive([
         icon: markRaw(PhoneVoice),
         show: true,
         click: () => {
-            isShowEditorVoice.value = true
+            // isShowEditorVoice.value = true
+            // 语音通话
+            conversationType.type = 1
+            isShowEditorVideo.value = true
         },
     },
     {
@@ -406,6 +415,8 @@ const navs = reactive([
         icon: markRaw(VideocamOutline),
         show: true,
         click: () => {
+            console.log('视频通话点击：', isShowEditorVideo)
+            conversationType.type = 2
             isShowEditorVideo.value = true
         },
     },
@@ -550,6 +561,12 @@ const onMention = (id, name) => {
         @on-submit="onRecorderEvent"
         @close="isShowEditorRecorder = false"
     />
+
+    <MeVideoCaller
+        v-if="isShowEditorVideo"
+        :conversation="conversationType.type"
+        @on-submit="onRecorderEvent"
+        @close="isShowEditorVideo = false"/>
 
 
 </template>
