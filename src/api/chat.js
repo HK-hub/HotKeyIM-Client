@@ -104,10 +104,18 @@ export const ServeCollectEmoticon = data => {
   return post('/api/v1/talk/message/collect', data)
 }
 
+// 投票消息
 export const ServeSendVote = data => {
   return post('/api/v1/talk/message/vote', data)
 }
 
+
 export const ServeConfirmVoteHandle = data => {
   return post('/api/v1/talk/message/vote/handle', data)
+}
+
+
+// 发起视频通话
+export const ServerInviteVideoCall = data => {
+  return post("/admin/message/send/video", data)
 }

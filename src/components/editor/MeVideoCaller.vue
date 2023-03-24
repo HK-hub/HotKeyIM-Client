@@ -1,12 +1,16 @@
 <script setup>
-import {ref, onUnmounted, computed} from 'vue'
+import {ref, onUnmounted, computed, onMounted} from 'vue'
 import {NModal, NTooltip} from 'naive-ui'
 import {MicOutline,VideocamOutline} from '@vicons/ionicons5'
 import {MicrophoneOff, VideoOff, PhoneOff, Microphone,Video,PhoneVoice,Minimize} from '@vicons/carbon'
 import {countDownTime} from '@/utils/functions'
 import {UserSwitchOutlined} from '@vicons/antd'
+import {Conversation} from '@/event/socket/conversation.js'
 
 const emit = defineEmits(['close', 'on-submit'])
+let lv = document.getElementById('local-video');
+let rv = document.getElementById('remote-video');
+let conversation;
 
 const isShow = ref(true)
 const status = ref(0) // 0 未开始 1呼叫中 2通话中 3通话结束
@@ -16,16 +20,25 @@ const duration = ref(0)
 const currentStream = 1;
 
 const props = defineProps({
-    conversation: {
+    conversationType: {
         type: Number,
         default: 1, // 1. 语音通话，2.视频通话
-    }
+    },
+    // 接收者id
+    receiver_id: {
+        type: String,
+        default: ''
+    },
+    talk_type: {
+        type: Number,
+        default: 1
+    },
 })
 
 const dialogTitle = computed(() => {
-    if (props.conversation === 1) {
+    if (props.conversationType === 1) {
         return '语音通话'
-    } else if (props.conversation == 2) {
+    } else if (props.conversationType == 2) {
         return '视频通话'
     } else {
         return '未知'
@@ -40,7 +53,7 @@ const onMinimize = () => {
 // 是否打开麦克风
 const openMicrophone = ref(true)
 // 是否打开摄像头
-const openCamera = ref(props.conversation == 2 ? true : false)
+const openCamera = ref(props.conversationType == 2 ? true : false)
 
 
 // 打开麦克风
@@ -59,7 +72,7 @@ const onCloseMicrophone = () => {
 const onOpenCamera = () => {
     console.log('打开摄像头')
     // 判断当前是视频通话
-    if (props.conversation != 1) {
+    if (props.conversationType != 1) {
         openCamera.value = true
     }
 }
@@ -103,12 +116,37 @@ const onStart = () => {
     animation.value = true
     // 修改为呼叫中
     status.value = 1
+}
 
+const onVideoCall = () => {
+
+    /**lv = document.getElementById('local-video')
+    rv = document.getElementById('remote-video')
+    console.log('视频元素对象', lv,rv)
+
+    conversation = new Conversation(lv, rv)
+    animation.value = true
+    // 修改为呼叫中
+    status.value = 1
+    conversation.clicCall()**/
 }
 
 const onStop = () => {
 
 }
+
+// 页面元素挂载完成
+onMounted(() => {
+    lv = document.getElementById('local-video')
+    rv = document.getElementById('remote-video')
+    console.log('视频元素对象', lv,rv)
+
+    conversation = new Conversation(lv, rv)
+    animation.value = props.conversationType.type == 1
+    // 修改为呼叫中
+    status.value = 1
+    conversation.clickCall()
+})
 
 onUnmounted(() => {
     onDestroy()
@@ -135,19 +173,19 @@ onUnmounted(() => {
                 </n-button>
             </template>
             <main class="main-box">
-                <div class="music audio-conversation" v-if="conversation == 1">
+                <div class="music audio-conversation" v-if="conversationType == 1">
                     <span class="line line1" :class="{ 'line-ani': animation }"></span>
                     <span class="line line2" :class="{ 'line-ani': animation }"></span>
                     <span class="line line3" :class="{ 'line-ani': animation }"></span>
                     <span class="line line4" :class="{ 'line-ani': animation }"></span>
                     <span class="line line5" :class="{ 'line-ani': animation }"></span>
                 </div>
-                <div class="video-conversation" v-if="conversation == 2">
+                <div class="video-conversation" v-if="conversationType == 2">
                     <n-button class="stream-switch-btn" strong secondary circle type="info" @click="switchShowVideo">
                         <n-icon :component="UserSwitchOutlined" size="large"/>
                     </n-button>
-                    <video v-show="currentStream == 1" class="local-video" autoplay loop src="src/assets/video/test.mp4"></video>
-                    <video v-show="currentStream == 2" class="remote-video" autoplay loop src="src/assets/video/test.mp4"></video>
+                    <video v-show="currentStream == 1" id="local-video" autoplay muted playsinline></video>
+                    <video v-show="currentStream == 2" id="remote-video" autoplay playsinline></video>
                 </div>
 
                 <div class="tip">
@@ -164,7 +202,7 @@ onUnmounted(() => {
 
                     <!--呼叫-->
                     <n-button
-                        v-show="status == 0 && conversation == 1"
+                        v-show="status == 0 && conversationType == 1"
                         type="primary"
                         ghost
                         round
@@ -174,11 +212,11 @@ onUnmounted(() => {
                         &nbsp;语音呼叫
                     </n-button>
                     <n-button
-                        v-show="status == 0 && conversation == 2"
+                        v-show="status == 0 && conversationType == 2"
                         type="primary"
                         ghost
                         round
-                        @click="onStart"
+                        @click="onVideoCall"
                     >
                         <n-icon :component="VideocamOutline"/>
                         &nbsp;视频呼叫
@@ -197,11 +235,11 @@ onUnmounted(() => {
                     </n-button>
 
                     <!--关闭摄像头-->
-                    <n-button v-show="conversation == 2 && (status == 2 || status == 1) && openCamera == true" type="warning"
+                    <n-button v-show="conversationType == 2 && (status == 2 || status == 1) && openCamera == true" type="warning"
                               ghost round @click="onCloseCamera">
                         <n-icon size="large" :component="Video"/>
                     </n-button>
-                    <n-button v-show="conversation == 2 && (status == 2 || status == 1) && openCamera == false" type="success"
+                    <n-button v-show="conversationType == 2 && (status == 2 || status == 1) && openCamera == false" type="success"
                               ghost round @click="onOpenCamera">
                         <n-icon size="large" :component="VideoOff"/>
                     </n-button>
@@ -260,7 +298,13 @@ onUnmounted(() => {
     justify-content: center;
     align-items: flex-start;
 
-    .local-video {
+
+    video {
+        // 镜像反转
+        transform: rotateY(180deg);
+    }
+
+    #local-video {
         width: 320px;
         height: 240px;
     }

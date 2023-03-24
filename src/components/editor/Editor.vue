@@ -34,6 +34,18 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    uid: {
+        type: String,
+        default: 0,
+    },
+    talk_type: {
+        type: Number,
+        default: 0,
+    },
+    receiver_id: {
+        type: Number,
+        default: 0,
+    },
 })
 
 let lastSelection = null
@@ -338,6 +350,9 @@ const onCodeEvent = data => {
     emit('editor-event', msg)
 }
 
+
+
+
 function uploadImageChange(e) {
     openImagePreview(e.target.files[0])
 }
@@ -564,7 +579,9 @@ const onMention = (id, name) => {
 
     <MeVideoCaller
         v-if="isShowEditorVideo"
-        :conversation="conversationType.type"
+        :conversationType="conversationType.type"
+        :receiver_id="receiver_id"
+        :talk_type="talk_type"
         @on-submit="onRecorderEvent"
         @close="isShowEditorVideo = false"/>
 

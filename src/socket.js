@@ -131,6 +131,9 @@ class Socket {
             useUserStore().isContactApply = true
         })
 
+        //
+
+        // 错误事件
         this.socket.on('event_error', data => {
             $message.error(JSON.stringify(data))
         })
@@ -141,13 +144,24 @@ class Socket {
      *
      * @param {Object} mesage
      */
-    send(mesage) {
+    send(message) {
         if (this.isConnect()) {
-            this.socket.send(mesage)
+            this.socket.send(message)
         } else {
             this.socket.close()
         }
     }
+
+
+    /**
+     * 绑定事件
+     * @param {String} event
+     * @param {Function} handler
+     */
+    on(event, handler) {
+        this.socket.on(event, handler)
+    }
+
 
     /**
      * 推送消息

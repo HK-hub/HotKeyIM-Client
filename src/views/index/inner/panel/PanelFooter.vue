@@ -237,7 +237,11 @@ onMounted(() => {
         class="el-footer"
         style="height: 200px"
     >
-        <Editor @editor-event="onEditorEvent" :show_vote="talk_type == 2"/>
+        <Editor @editor-event="onEditorEvent"
+                :receiver_id="receiver_id"
+                :uid="uid"
+                :talk_type="talk_type"
+                :show_vote="talk_type == 2"/>
     </footer>
 
     <footer
