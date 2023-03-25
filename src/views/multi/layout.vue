@@ -45,7 +45,7 @@ const menus = reactive([
 </script>
 
 <template>
-    <IMLayout :index="3">
+    <IMLayout :index="2">
         <SubViewLayout title="多媒体" :menus="menus"/>
     </IMLayout>
 </template>

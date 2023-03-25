@@ -43,7 +43,7 @@ const menus = reactive([
         link: '/multi',
         icon: markRaw(CubeMultiple24Regular),
         title: '多媒体',
-        hotspot: computed(() => userStore.isContactApply),
+        //hotspot: computed(() => userStore.isContactApply),
     },
     {
         link: '/note',

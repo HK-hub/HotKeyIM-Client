@@ -15,7 +15,7 @@ const loadId = computed(() => noteStore.view.loadId)
 </script>
 
 <template>
-  <IMLayout :index="2">
+  <IMLayout :index="3">
     <section class="el-container height100">
       <aside class="el-aside" style="width: 230px"><NoteMenu /></aside>
       <aside class="el-aside" style="width: 350px"><NoteList /></aside>
