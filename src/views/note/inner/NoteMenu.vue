@@ -94,7 +94,7 @@ const loadWatchTagsMenu = () => {
   )
 }
 
-const getCalssId = () => {
+const getClassId = () => {
   let str = activedMenu.value
 
   if (str.substring(0, 1) != '2') {
@@ -244,7 +244,7 @@ loadWatchTagsMenu()
         round
         @click="
           () => {
-            store.addNewNote(getCalssId())
+            store.addNewNote(getClassId())
           }
         "
         class="btn-add"

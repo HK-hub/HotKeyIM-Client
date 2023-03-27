@@ -3,9 +3,9 @@ import { getAccessToken } from '@/utils/auth'
 
 // -------- 笔记相关 --------
 
-// 查询用户文集分类服务接口
+// 查询用户文集服务接口
 export const ServeGetArticleList = data => {
-  return get('/api/v1/note/article/list', data)
+  return get('/admin/note/article/list', data)
 }
 
 // 编辑笔记服务接口
@@ -57,12 +57,12 @@ export const ServeUpdateArticleTag = data => {
 
 // 查询用户文集分类服务接口
 export const ServeGetArticleClass = data => {
-  return get('/api/v1/note/class/list', data)
+  return get('/admin/note/category/list', data)
 }
 
 // 添加或编辑文集分类服务接口
 export const ServeEditArticleClass = data => {
-  return post('/api/v1/note/class/editor', data)
+  return post('/admin/note/category/edit', data)
 }
 
 // 删除笔记分类服务接口
@@ -84,7 +84,7 @@ export const ServeMergeArticleClass = data => {
 
 // 获取笔记表标签服务接口
 export const ServeGetArticleTag = data => {
-  return get('/api/v1/note/tag/list', data)
+  return get('/admin/note/tag/list', data)
 }
 
 // 添加或编辑笔记标签服务接口
