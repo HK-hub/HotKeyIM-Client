@@ -47,6 +47,7 @@ const dropdownMenu = reactive({
   item: {},
 })
 
+// 加载分类菜单
 const loadWatchClassMenu = () => {
   watch(
     () => store.class,
@@ -55,7 +56,7 @@ const loadWatchClassMenu = () => {
       for (const item of store.class) {
         items.push({
           id: item.id,
-          name: item.class_name,
+          name: item.name,
           count: item.count,
           isEdit: false,
           indexName: '2-' + item.id,
@@ -70,6 +71,8 @@ const loadWatchClassMenu = () => {
   )
 }
 
+
+// 加载标签菜单
 const loadWatchTagsMenu = () => {
   watch(
     () => store.tags,
@@ -79,7 +82,7 @@ const loadWatchTagsMenu = () => {
       for (const item of store.tags) {
         items.push({
           id: item.id,
-          name: item.tag_name,
+          name: item.name,
           count: item.count,
           isEdit: false,
           indexName: '3-' + item.id,

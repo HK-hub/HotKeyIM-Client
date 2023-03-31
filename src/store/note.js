@@ -29,16 +29,19 @@ export const useNoteStore = defineStore('note', {
                 loadStatus: 0,
                 detail: {
                     id: 0,
-                    class_id: 0,
+                    categoryId: 0,
+                    category: {},
+                    categoryName: '',
                     title: '',
-                    is_asterisk: 0,
+                    // 星标
+                    stared: 0,
                     status: 1,
                     tags: [],
                     files: [],
                     content: '',
-                    md_content: '',
-                    created_at: '',
-                    class_name: '',
+                    mdContent: '',
+                    createTime: '',
+                    updateTIme: '',
                 },
             },
         }
@@ -51,16 +54,19 @@ export const useNoteStore = defineStore('note', {
 
         addNewNote(class_id = 0) {
             this.view.detail = {
-                class_id: class_id,
-                content: '',
-                created_at: '',
-                files: [],
                 id: 0,
-                is_asterisk: 0,
-                md_content: '',
+                categoryId: class_id,
+                category: {},
+                categoryName: '',
+                title: '请编辑标题！！！',
+                // 星标
+                stared: 0,
                 status: 1,
                 tags: [],
-                title: '请编辑标题！！！',
+                files: [],
+                content: '',
+                mdContent: '',
+                createTime: '',
             }
 
             this.view.loadId = 1
@@ -83,11 +89,11 @@ export const useNoteStore = defineStore('note', {
 
         // 加载标签
         loadTags() {
-            ServeGetArticleTag().then(({code, data}) => {
-                console.log('加载笔记标签列表：', data)
-                if (code != 200) return false
+            ServeGetArticleTag().then(res => {
+                console.log('加载笔记标签列表：', res.data)
+                if (res.success == false) return false
 
-                this.tags = data
+                this.tags = res.data
             })
         },
 
@@ -133,7 +139,7 @@ export const useNoteStore = defineStore('note', {
             this.setEditorMode('preview')
 
             ServeGetArticleDetail({
-                article_id: id,
+                noteId: id,
             }).then(({code, data}) => {
                 if (code != 200 && data.id != this.view.loadId) {
                     return
@@ -141,14 +147,17 @@ export const useNoteStore = defineStore('note', {
 
                 this.view.loadStatus = 1
 
-                data.class_name = ''
+                data.category.name = ''
                 this.view.detail = data
 
+                console.log()
                 let node = this.class.find(item => {
-                    return item.id == data.class_id
+                    return item.id == data.category.id
                 })
 
-                this.view.detail.class_name = node.class_name || ''
+                this.view.detail.categoryName = node.name || ''
+                this.view.detail.categoryId = node.id
+                this.view.detail.category = node
             })
         },
 
@@ -159,19 +168,29 @@ export const useNoteStore = defineStore('note', {
 
         // 修改收藏状态
         setCollectionStatus(isTrue) {
-            this.view.detail.is_asterisk = isTrue ? 1 : 0
+            this.view.detail.stared = isTrue ? true : false
         },
 
         // 编辑分类
         async editClass(class_id, class_name) {
-            const res = await ServeEditArticleClass({class_id, class_name})
-
-            if (res && res.code === 200) {
+            const res = await ServeEditArticleClass({
+                categoryId: class_id,
+                name: class_name,
+                userId: userId,
+                description: class_name,
+                avatar: '',
+            })
+            console.log('编辑文章分类：', res)
+            if (res && res.success === true) {
                 if (class_id === 0) {
-                    this.class.unshift({class_name, count: 0, id: res.data.id})
+                    this.class.unshift({
+                        id: res.data.id,
+                        name: class_name,
+                        count: 0,
+                    })
                 } else {
                     const item = this.class.find(item => item.id === class_id)
-                    item && Object.assign(item, {class_name})
+                    item && Object.assign(item, {name: class_name})
                 }
             }
         },
@@ -192,29 +211,34 @@ export const useNoteStore = defineStore('note', {
 
         // 编辑标签
         async editTag(tag_id, tag_name) {
-            const res = await ServeEditArticleTag({tag_id, tag_name})
-
+            const res = await ServeEditArticleTag({
+                tagId: tag_id,
+                name: tag_name,
+            })
+            console.log('编辑标签结果：', res)
             if (res && res.code === 200) {
                 if (tag_id === 0) {
-                    this.tags.unshift({tag_name, count: 0, id: res.data.id})
+                    this.tags.unshift({name: tag_name, count: 0, id: res.data.id})
                 } else {
                     const item = this.tags.find(item => item.id === tag_id)
-                    item && Object.assign(item, {tag_name})
+                    item && Object.assign(item, {name: tag_name})
                 }
             }
         },
 
         async deleteTag(tag_id) {
-            const res = await ServeDeleteArticleTag({tag_id})
+            const res = await ServeDeleteArticleTag({
+                tagId: tag_id
+            })
 
-            if (res && res.code == 200) {
+            if (res.success && res.code == 200) {
                 const index = this.tags.findIndex(item => item.id === tag_id)
 
                 if (index >= 0) {
                     this.tags.splice(index, 1)
                 }
             } else {
-                $message.info(res.message)
+                $message.info(res.data || res.message)
             }
         },
     },

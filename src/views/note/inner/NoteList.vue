@@ -69,25 +69,25 @@ const onSearchInput = debounce(e => {
           <div class="article-main pointer">
             <div class="content">
               <div class="datetime">
-                <span>{{ note.created_at.substr(0, 10) }}</span>
-                <span>{{ note.class_name }}</span>
+                <span>{{ note.createTime}}</span>
+                <span>{{ note.category.name }}</span>
               </div>
               <div class="abstract">
                 {{
-                  note.abstract
+                  note.summary
                     .replace(/[\r\n]/g, '')
                     .replace(/(<([^>]+)>)/gi, '')
                 }}
               </div>
             </div>
 
-            <div class="image" v-show="note.image">
+            <div class="image" v-show="note.cover">
               <n-image
                 width="56"
                 height="56"
                 preview-disabled
                 style="border-radius: 2px"
-                :src="note.image"
+                :src="note.cover"
                 fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
               />
             </div>
