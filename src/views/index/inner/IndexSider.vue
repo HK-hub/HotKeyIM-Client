@@ -108,9 +108,10 @@ const onTabTalk = data => {
 
     if (data.talk_type == 2) {
         ServeGetGroupMembers({
-            group_id: data.receiver_id,
+            groupId: data.receiver_id,
         }).then(res => {
-            if (res.code == 200) {
+            if (res.code == 200 && res.success) {
+                console.log('获取群聊成员列表：', res.data)
                 editorStore.updateMentionItems(res.data || [])
             }
         })

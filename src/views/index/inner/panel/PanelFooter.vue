@@ -58,6 +58,7 @@ const onSendTextEvent = throttle(value => {
         senderId: userId,
         receiverId: props.receiver_id,
         talkType: props.talk_type,
+        groupId: props.talk_type == 2 ? props.receiver_id : null,
         text: data,
     })
     console.log('发送文本消息：', res)

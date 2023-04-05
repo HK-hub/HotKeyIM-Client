@@ -61,8 +61,9 @@ const dropdown = reactive({
 })
 
 const onLoadData = () => {
+    // 获取群员列表
   ServeGetGroupMembers({
-    group_id: props.id,
+    groupId: props.id,
   }).then(res => {
     if (res.code == 200) {
       let data = res.data || []

@@ -44,15 +44,18 @@ export const useEditorStore = defineStore('editor', {
         {
           id: 0,
           name: '所有人',
+          // 群内昵称
+          remark: '所有人',
           avatar: '',
         },
       ]
 
       for (const o of data) {
         items.push({
-          id: o.user_id,
-          name: o.nickname,
-          avatar: o.avatar,
+          id: o.memberId,
+          name: o.memberUsername,
+          remark: o.memberRemarkName,
+          avatar: o.memberAvatar,
         })
       }
 

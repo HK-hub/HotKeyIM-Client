@@ -183,6 +183,7 @@ class Talk extends Base {
       talk_type,
       receiver_id,
     }).then(({ code, data }) => {
+      console.log('加载对接节点,成功：', data)
       if (code == 200) {
         useTalkStore().addItem(formatTalkItem(data))
         this.play()
