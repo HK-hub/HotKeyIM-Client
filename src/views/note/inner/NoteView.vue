@@ -216,8 +216,10 @@ const onDelete = () => {
     })
 }
 
+// 分享
 const onShare = () => {
     $message.info('开发中...')
+
 }
 </script>
 

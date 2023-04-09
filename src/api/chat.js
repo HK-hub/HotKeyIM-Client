@@ -42,7 +42,7 @@ export const ServeSetNotDisturb = data => {
 
 // 查找用户聊天记录服务接口
 export const ServeFindTalkRecords = data => {
-  return get('/admin/message/records/history', data)
+  return post('/admin/message/records/history', data)
 }
 
 // 搜索用户聊天记录服务接口

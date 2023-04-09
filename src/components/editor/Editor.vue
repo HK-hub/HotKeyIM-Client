@@ -435,14 +435,14 @@ const navs = reactive([
             isShowEditorVideo.value = true
         },
     },
-    {
+   /* {
         title: '多媒体',
         icon: markRaw(MediaCast),
         show: true,
         click: () => {
             isShowEditorMultimedia.value = true
         },
-    },
+    },*/
     {
         title: '地理位置',
         icon: markRaw(LocationOutline),

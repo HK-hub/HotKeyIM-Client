@@ -1,6 +1,5 @@
 // 语音通话，视频通话
 import Base from './base'
-import socket from '@/socket'
 
 // 信令
 const SIGNALING_TYPE = "signaling-event";
@@ -33,6 +32,9 @@ const SIGNALING_TYPE_CANDIDATE = "candidate-event";
  * 好友状态事件
  */
 export class Conversation extends Base {
+
+
+
     /**
      * 本地码流
      */
@@ -185,11 +187,6 @@ export class Conversation extends Base {
     // 发送信令消息
     sendSignalingMessage (data) {
         // 发送数据到webSocket 协议的信令服务器
-        socket.send({
-            event: SIGNALING_TYPE,
-            dataString: JSON.stringify(data)
-        })
-
     }
 
 
