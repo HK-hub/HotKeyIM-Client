@@ -2,7 +2,6 @@
 import {ref, computed, watch, markRaw, reactive, onMounted} from 'vue'
 import {useRouter} from 'vue-router'
 import IMLayout from '@/views/layout/IMLayout.vue'
-import Room from './room.vue'
 import SubViewLayout from '@/components/base/SubViewLayout.vue'
 import {NGrid, NGridItem, NButton, NResult, NCard} from 'naive-ui'
 import {useUserStore} from '@/store/user'
@@ -16,9 +15,6 @@ import {
 } from '@vicons/ionicons5'
 
 const router = useRouter()
-const userStore = useUserStore()
-const showFunctionMenus = ref(true)
-
 // 加入房间，创建房间，历史房间
 const menus = reactive([
     {
@@ -71,68 +67,28 @@ const menus = reactive([
 // 点击频道
 const onEnterFunBox = (path) => {
     console.log('进入function：',path)
-    showFunctionMenus.value = false
     router.push(path)
 }
 </script>
-
 <template>
-    <IMLayout :index="2">
-        <main class="el-main router-view">
-            <router-view> </router-view>
-        </main>
-    </IMLayout>
+    <div class="main-function">
+        <div class="function-box">
+            <n-grid :x-gap="12" :y-gap="8" :cols="3">
+                <n-grid-item class="function-item" v-for="(item,index) in menus" :key="item.name">
+                    <div class="light-green">
+                        <n-card :title="item.card" class="item-card">
+                            <n-result status="418" :title="item.title" :description=item.description>
+                                <template #footer>
+                                    <n-button @click="onEnterFunBox(item.path)">进入频道</n-button>
+                                </template>
+                            </n-result>
+                        </n-card>
+                    </div>
+                </n-grid-item>
+            </n-grid>
+        </div>
+    </div>
 </template>
+<style lang="less">
 
-<style lang="less" scoped>
-.main-function {
-    width: 100%;
-    display: flex;
-    margin-top: 20px;
-    justify-content: center;
-    justify-items: center;
-}
-.function-box {
-    width: 90%;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    justify-items: center;
-}
-
-.light-green {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 128, 0, 0.12);
-}
-.green {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 128, 0, 0.24);
-}
-
-.function-box {
-
-}
-
-.item-card:hover {
-    border:2px solid #4caf50;
-}
-
-@keyframes move {
-    0% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(25px);
-    }
-
-    100% {
-        transform: translateY(0px);
-    }
-}
 </style>

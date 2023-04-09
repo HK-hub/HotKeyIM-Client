@@ -87,6 +87,12 @@ const emit = defineEmits(['evnet'])
 // 多媒体消息选择事件
 const onMediaMessageEvent = key => {
     console.log('多媒体消息事件触发：', key)
+
+    if (key = 'record') {
+        // 屏幕录制
+
+    }
+
 }
 
 // 点击群聊文件夹

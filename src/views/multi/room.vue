@@ -1,11 +1,17 @@
 <script setup>
-import {onMounted, reactive, ref} from 'vue'
+import {onMounted, reactive, ref,markRaw} from 'vue'
 import {
-    SIGNALING_TYPE_JOIN, SIGNALING_TYPE_RESP_JOIN, SIGNALING_TYPE_NEW_PEER,SIGNALING_TYPE_OFFER
-    , SIGNALING_TYPE_LEAVE,SIGNALING_TYPE_PEER_LEAVE,SIGNALING_TYPE_CANDIDATE,SIGNALING_TYPE_ANSWER
+    SIGNALING_TYPE_JOIN, SIGNALING_TYPE_RESP_JOIN, SIGNALING_TYPE_NEW_PEER, SIGNALING_TYPE_OFFER
+    , SIGNALING_TYPE_LEAVE, SIGNALING_TYPE_PEER_LEAVE, SIGNALING_TYPE_CANDIDATE, SIGNALING_TYPE_ANSWER
 } from '@/event/socket/signaling'
 import 'webrtc-adapter'
+import { NButton } from 'naive-ui'
 
+const count = ref(0)
+let blobMedia = reactive([])
+let screenStream = null
+let mediaRecord = null
+let logList = reactive([])
 
 // 当前用户
 const localUserId = JSON.parse(localStorage.getItem('IM_USERID')).value
@@ -126,14 +132,138 @@ const onLeaveRoom = () => {
     // 离开房间
     doLeave();
 }
+// 分享屏幕
+const onShareScreen = async () => {
+    // 切换本地码流为：DisplayMedia
+    blobMedia = []
+    try {
+        screenStream = await navigator.mediaDevices.getDisplayMedia({
+            audio: true,
+            video: true
+        })
+        screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+            $message.warning('用户中断了屏幕共享')
+            // 切换回视频码流
+            onChangeToVideo()
+        })
+        /*mediaRecord = new MediaRecorder(screenStream, { mimeType: 'video/webm' });
+
+        mediaRecord.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) {
+                blobMedia.push(e.data);
+            }
+        };
+        mediaRecord.start(500)*/
+        // 设置流
+        let videoTrack = screenStream.getVideoTracks()[0]
+        const sender = peerConnection.getSenders().find(function (s) {
+            // make sure tack types match
+            return s.track.kind === videoTrack.kind;
+        });
+        sender.replaceTrack(videoTrack)
+        localVideo.srcObject = screenStream;
+        console.log('切换为屏幕共享')
+    } catch (e) {
+        $message.warning('屏幕共享失败!')
+    }
+}
+// 从屏幕共享切换回视频通话
+const onChangeToVideo = async () => {
+
+    // 结束录制
+    mediaRecord.stop();
+    screenStream.getTracks().forEach(track => track.stop());
+
+    // 获取本地视频码流
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: {
+                width: 1000,
+                height: 700
+            }
+        })
+        let videoTrack = localStream.getVideoTracks()[0]
+        const sender = peerConnection.getSenders().find(function (s) {
+            // make sure tack types match
+            return s.track.kind === videoTrack.kind;
+        });
+        sender.replaceTrack(videoTrack)
+        localVideo.srcObject = localStream
+        console.log('切换回视频通话')
+    } catch (e) {
+
+    }
+
+}
+// 屏幕录制
+const startLocalRecord = async () => {
+    blobMedia = []
+    try {
+        screenStream = await navigator.mediaDevices.getDisplayMedia();
+        screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+            $message.warning('用户中断了屏幕共享')
+            endLocalRecord()
+        })
+        mediaRecord = new MediaRecorder(screenStream, { mimeType: 'video/webm' });
+
+        mediaRecord.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) {
+                blobMedia.push(e.data);
+            }
+        };
+        mediaRecord.start(500)
+        // 设置流
+        const scVideo = document.querySelector('#screenVideo');
+        scVideo.srcObject = screenStream;
+    } catch (e) {
+        $message.warning('屏幕录制失败!')
+    }
+}
+// 结束录制
+const endLocalRecord = async () => {
+    if(!mediaRecord || mediaRecord.state !== 'recording') {
+        $message.warning('录制还未开始');
+        return;
+    }
+    mediaRecord.stop();
+    screenStream.getTracks().forEach(track => track.stop());
+}
+// 回放视频
+const replayLocalRecord = async () => {
+    if (blobMedia.length) {
+        const scVideo = document.querySelector('#screenVideo');
+        const blob = new Blob(blobMedia, { type:'video/webm' })
+        if(scVideo) {
+            scVideo.srcObject = null;
+            scVideo.src = URL.createObjectURL(blob);
+        }
+    } else {
+       $message.warning('没有录制文件');
+    }
+}
+// 下载视频
+const downloadLocalRecord = async () => {
+    if (!blobMedia.length) {
+        $message.warning('没有录制文件');
+        return;
+    }
+    const blob = new Blob(blobMedia, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '录屏_' + Date.now() + '.webm';
+    a.click();
+}
+
 
 // 初始化本地流
 const initLocalStream = () => {
     navigator.mediaDevices.getUserMedia({
         audio: true,
         video: {
-            width: 420,
-            height: 270
+            width: 1000,
+            height: 700
         }
     })
         .then(openLocalStream)
@@ -361,23 +491,83 @@ onMounted(() => {
 </script>
 
 <template>
-    <h1>WebRTC Demo</h1>
     <div class="roomSetting">
-        <n-input v-model:value="model.roomId" maxlength="15" placeholder="输入房间号"></n-input>
-        <n-button id="join" type="default" @click="onJoinRoom()">加入</n-button>
-        <n-button id="leave" type="default" @click="onLeaveRoom()">离开</n-button>
+        <n-input v-model:value="model.roomId" maxlength="15" placeholder="输入房间号"/>
+        <n-button id="join" type="info" @click="onJoinRoom()">加入</n-button>
+        <n-button id="leave" type="error" @click="onLeaveRoom()">离开</n-button>
+        <n-button id="leave" type="success" @click="onLeaveRoom()">分享屏幕</n-button>
+        <n-button id="leave" type="success" @click="startLocalRecord()">屏幕录制</n-button>
+        <n-button id="leave" type="success" @click="endLocalRecord()">结束录制</n-button>
+        <n-button id="leave" type="success" @click="replayLocalRecord()">回放视频</n-button>
+        <n-button id="leave" type="success" @click="downloadLocalRecord()">下载视频</n-button>
+        <n-button id="leave" type="primary" @click="onShareScreen()">分享屏幕</n-button>
+        <n-button id="leave" type="info" @click="onChangeToVideo()">切换视频</n-button>
+
     </div>
-    <div id="videos">
-        <video id="localVideo" playsinline autoplay muted></video>
-        <div id="theirs-video">
-            <video id="remoteVideo" playsinline autoplay></video>
+    <div class="multi-content">
+        <div id="videos">
+            <div id="theirs-video">
+                <video id="remoteVideo" playsinline autoplay></video>
+            </div>
+            <div id="my-video">
+                <video id="localVideo" playsinline autoplay muted></video>
+            </div>
+            <div id="screen">
+                <video id='screenVideo' autoplay muted></video>
+            </div>
+        </div>
+        <div class="chatMessage">
         </div>
     </div>
+
 </template>
-<style lang="css" scoped>
+<style lang="less" scoped>
 .roomSetting {
-    width: 60%;
+    width: 100%;
     margin-bottom: 20px;
+    display: flex;
+    align-content: center;
+    justify-items: center;
 }
 
+.multi-content {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+#videos {
+    display: flex;
+    align-content: center;
+    justify-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#localVideo {
+    width: 370px;
+    height: 250px;
+    margin-right: 10px;
+    border-radius: 2%;
+}
+
+#remoteVideo {
+    width: 100%;
+    height: 90%;
+}
+
+#screenVideo {
+    height: 100%;
+    width: 100%;
+}
+
+#theirs-video {
+    display: inline;
+    width: 120%;
+    margin-left: 10px;
+    border-radius: 20%;
+}
+
+.video {
+}
 </style>

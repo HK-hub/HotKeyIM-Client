@@ -8,11 +8,13 @@ import SettingRouter from './modules/setting'
 import ContactRouter from './modules/contact'
 import MultiRouter from './modules/multi'
 import AuthRouter from './modules/auth'
+import CodeRouter from './modules/code'
 
 const routes = [
     SettingRouter,
     ContactRouter,
     MultiRouter,
+    CodeRouter,
     AuthRouter,
     {
         path: '/',
@@ -31,6 +33,12 @@ const routes = [
         name: 'Note',
         meta: {requiresAuth: true},
         component: () => import('@/views/note/index.vue'),
+    },
+    {
+        path: '/code',
+        name: 'Code',
+        meta: {requiresAuth: true},
+        component: () => import('@/views/code/layout.vue'),
     },
     {
         path: '/:pathMatch(.*)*',

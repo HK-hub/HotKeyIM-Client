@@ -13,7 +13,8 @@ import {
     ArrowDownCircle,
 } from '@vicons/ionicons5'
 import {LogoGithub, MdBook} from '@vicons/ionicons4'
-import {CubeMultiple24Regular} from '@vicons/fluent'
+import {CubeMultiple24Regular,} from '@vicons/fluent'
+import {Code} from '@vicons/carbon'
 
 defineProps({
     index: {
@@ -42,7 +43,7 @@ const menus = reactive([
     {
         link: '/multi',
         icon: markRaw(CubeMultiple24Regular),
-        title: '多媒体',
+        title: '探索',
         //hotspot: computed(() => userStore.isContactApply),
     },
     {
@@ -51,9 +52,8 @@ const menus = reactive([
         title: '笔记',
     },
     {
-        link: 'https://github.com/hk-hub/HotKeyIM',
-        icon: markRaw(LogoGithub),
-        external: true,
+        link: '/code',
+        icon: markRaw(Code),
         title: '源码',
     },
     {
