@@ -1,5 +1,5 @@
 {
-    "name": "HotKey IM",
+    "name": "him",
     "private": true,
     "version": "0.0.0",
     "main": "electron/main.js",
@@ -12,6 +12,11 @@
         "electron:build": "vite build --mode electron && electron-builder --mac && electron-builder --win --x64"
     },
     "dependencies": {
+        "@codemirror/lang-html": "^6.4.3",
+        "@codemirror/lang-java": "^6.0.1",
+        "@codemirror/lang-javascript": "^6.1.5",
+        "@codemirror/lang-json": "^6.0.1",
+        "@codemirror/theme-one-dark": "^6.1.1",
         "@highlightjs/vue-plugin": "^2.1.0",
         "@kangc/v-md-editor": "^2.3.15",
         "@material-ui/core": "^4.12.4",
@@ -20,14 +25,15 @@
         "@videojs-player/vue": "^1.0.0",
         "@vueuse/core": "^9.13.0",
         "axios": "^0.26.0",
+        "codemirror": "^6.0.1",
         "highlight.js": "^11.5.0",
         "js-audio-recorder": "^1.0.7",
         "notistack": "^3.0.1",
         "pinia": "^2.0.13",
         "spark-md5": "^3.0.2",
         "uuid": "^9.0.0",
-        "video.js": "^8.0.4",
         "vue": "^3.2.25",
+        "vue-codemirror": "^6.1.1",
         "vue-cropper": "^1.0.2",
         "vue-pdf-embed": "^1.1.5",
         "vue-router": "^4.0.12",
@@ -48,14 +54,15 @@
         "less": "^4.1.2",
         "less-loader": "^10.2.0",
         "naive-ui": "^2.33.3",
+        "video.js": "^8.0.4",
         "vite": "^2.8.0",
         "vite-plugin-compression": "^0.5.1",
         "wait-on": "^6.0.1"
     },
     "build": {
-        "appId": "com.gzydong.Lumen-IM",
-        "productName": "Lumen IM",
-        "copyright": "Copyright © 2022 Lumen IM",
+        "appId": "com.hk.him",
+        "productName": "HotKey IM",
+        "copyright": "Copyright © 2022 HotKey IM",
         "mac": {
             "category": "public.app-category.utilities",
             "icon": "build/icons/lumen-im-mac.png"
