@@ -79,7 +79,7 @@ const onEnterFunBox = (path) => {
 <template>
     <IMLayout :index="2">
         <main class="el-main router-view">
-            <router-view> </router-view>
+            <router-view style="height: 95%"> </router-view>
         </main>
     </IMLayout>
 </template>

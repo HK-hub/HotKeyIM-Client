@@ -1,11 +1,12 @@
 <script setup>
-import {onMounted, reactive, ref,markRaw} from 'vue'
+import {onMounted, reactive, ref,markRaw, defineComponent} from 'vue'
 import {
     SIGNALING_TYPE_JOIN, SIGNALING_TYPE_RESP_JOIN, SIGNALING_TYPE_NEW_PEER, SIGNALING_TYPE_OFFER
     , SIGNALING_TYPE_LEAVE, SIGNALING_TYPE_PEER_LEAVE, SIGNALING_TYPE_CANDIDATE, SIGNALING_TYPE_ANSWER
 } from '@/event/socket/signaling'
 import 'webrtc-adapter'
-import { NButton } from 'naive-ui'
+import { NButton,NLayout,NLayoutHeader,NLayoutContent, NLayoutSider, NMenu} from 'naive-ui'
+import { FlashOutline } from '@vicons/ionicons5'
 
 const count = ref(0)
 let blobMedia = reactive([])
@@ -21,6 +22,12 @@ const model = reactive({
     localUserId: localUserId == null ? '0' : localUserId,
     remoteUserId: '0',
 });
+// 当前模式
+const activityModel = ref('camera')
+
+// 菜单
+const menuOptions = reactive([])
+
 
 // 视频元素
 let localVideo = null;
@@ -63,7 +70,6 @@ HRTCEngine.prototype.createWebSocket = function () {
     hRTCEngine.signaling.onerror = function (err) {
         hRTCEngine.onError(err)
     }
-
 }
 
 // WebSocket 事件
@@ -459,8 +465,6 @@ const doLeave = () => {
     hRTCEngine.send(JSON.stringify(jsonMsg))
     console.info('doLeave message: ', JSON.stringify(jsonMsg))
 }
-
-
 // 处理加入peer
 const handleRemoteNewPeer = (message) => {
     console.info('handleRemoteNewPeer, 新成员加入：', JSON.stringify(message))
@@ -480,6 +484,7 @@ const handlePeerLeave = (message) => {
     console.info('handlePeerLeave, remoteUid=' + message.remoteUid + ' , roomId=' + message.roomId)
     remoteVideo.srcObject = null
     remoteStream = null
+    remoteVideo.poster = null
 }
 
 // 页面挂载完成
@@ -491,44 +496,77 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="roomSetting">
-        <n-input v-model:value="model.roomId" maxlength="15" placeholder="输入房间号"/>
-        <n-button id="join" type="info" @click="onJoinRoom()">加入</n-button>
-        <n-button id="leave" type="error" @click="onLeaveRoom()">离开</n-button>
-        <n-button id="leave" type="success" @click="onLeaveRoom()">分享屏幕</n-button>
-        <n-button id="leave" type="success" @click="startLocalRecord()">屏幕录制</n-button>
-        <n-button id="leave" type="success" @click="endLocalRecord()">结束录制</n-button>
-        <n-button id="leave" type="success" @click="replayLocalRecord()">回放视频</n-button>
-        <n-button id="leave" type="success" @click="downloadLocalRecord()">下载视频</n-button>
-        <n-button id="leave" type="primary" @click="onShareScreen()">分享屏幕</n-button>
-        <n-button id="leave" type="info" @click="onChangeToVideo()">切换视频</n-button>
+    <n-layout content-style="height: 100%">
+        <n-layout-header bordered>
+            <div class="roomSetting">
+                <n-input v-model:value="model.roomId" maxlength="15" placeholder="输入房间号"/>
+                <n-button id="join" type="info" @click="onJoinRoom()">加入</n-button>
+                <n-button id="leave" type="error" @click="onLeaveRoom()">离开</n-button>
+                <n-button id="leave" type="success" @click="onLeaveRoom()">分享屏幕</n-button>
+                <n-button id="leave" type="success" @click="startLocalRecord()">屏幕录制</n-button>
+                <n-button id="leave" type="success" @click="endLocalRecord()">结束录制</n-button>
+                <n-button id="leave" type="success" @click="replayLocalRecord()">回放视频</n-button>
+                <n-button id="leave" type="success" @click="downloadLocalRecord()">下载视频</n-button>
+                <n-button id="leave" type="primary" @click="onShareScreen()">分享屏幕</n-button>
+                <n-button id="leave" type="info" @click="onChangeToVideo()">切换视频</n-button>
 
-    </div>
-    <div class="multi-content">
-        <div id="videos">
-            <div id="theirs-video">
-                <video id="remoteVideo" playsinline autoplay></video>
             </div>
-            <div id="my-video">
-                <video id="localVideo" playsinline autoplay muted></video>
-            </div>
-            <div id="screen">
-                <video id='screenVideo' autoplay muted></video>
-            </div>
-        </div>
-        <div class="chatMessage">
-        </div>
-    </div>
+        </n-layout-header>
+        <n-layout has-sider>
+            <n-layout-sider :width="80" content-style="padding: 2px;">
+                <n-menu
+                    :collapsed="false"
+                    :collapsed-width="64"
+                    :collapsed-icon-size="22"
+                    :options="menuOptions"
+                />
+            </n-layout-sider>
+            <n-layout>
+                <n-layout-content content-style="">
+<!--                    <div class="multi-content">
+                        <div id="videos">
+                            <div id="theirs-video">
+                            </div>
+                            <div id="my-video">
+
+                            </div>
+                        </div>
+                        <div class="chatMessage">
+                        </div>
+                    </div>-->
+                    <n-layout has-sider>
+                        <n-layout-content content-style="width: 92%">
+                            <video id="remoteVideo" playsinline autoplay poster=""></video>
+                            <div id="screen">
+                                <video id='screenVideo' autoplay muted v-show="activityModel == 'screen'"></video>
+                            </div>
+                        </n-layout-content>
+                        <n-layout-sider class="content-sider" content-style="max-width: 375px;width: 370px">
+                            <video id="localVideo" playsinline autoplay muted></video>
+                            <div class="chat-content" style=""></div>
+                            <n-input class="chat-input" placeholder="聊点什么...">
+                                <template #prefix>
+                                    <n-icon :component="FlashOutline" />
+                                </template>
+                            </n-input>
+                        </n-layout-sider>
+                    </n-layout>
+                </n-layout-content>
+            </n-layout>
+        </n-layout>
+    </n-layout>
+
 
 </template>
+
 <style lang="less" scoped>
 .roomSetting {
-    width: 100%;
-    margin-bottom: 20px;
-    display: flex;
-    align-content: center;
-    justify-items: center;
-}
+     width: 100%;
+     margin-bottom: 20px;
+     display: flex;
+     align-content: center;
+     justify-items: center;
+ }
 
 .multi-content {
     display: flex;
@@ -545,15 +583,18 @@ onMounted(() => {
 }
 
 #localVideo {
-    width: 370px;
-    height: 250px;
-    margin-right: 10px;
+    width: 97%;
+    // height: 250px;
+    margin-left: 6px;
+    margin-bottom: 6px;
     border-radius: 2%;
 }
 
 #remoteVideo {
     width: 100%;
-    height: 90%;
+    height: 97%;
+    border-radius: 2%;
+
 }
 
 #screenVideo {
@@ -568,6 +609,27 @@ onMounted(() => {
     border-radius: 20%;
 }
 
+.content-sider {
+
+    display: flex;
+    justify-content: center;
+
+}
+
 .video {
+}
+.chat-content {
+    width: 95%;
+    height: 56%;
+    margin-top: 3px;
+    margin-left: 6px;
+    margin-bottom: 10px;
+    border-block: solid;
+    border-color: #27c8f8;
+    border-radius: 3px;
+}
+
+.chat-input {
+    width: 80%;
 }
 </style>

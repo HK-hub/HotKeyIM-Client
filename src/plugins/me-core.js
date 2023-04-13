@@ -9,6 +9,7 @@ import {
   RevokeMessage,
   SystemTextMessage,
   AudioMessage,
+  VideoMessage,
   InviteMessage,
 } from '@/components/talk/message'
 
@@ -23,6 +24,6 @@ export function setComponents(app) {
   app.component('revoke-message', RevokeMessage)
   app.component('system-text-message', SystemTextMessage)
   app.component('audio-message', AudioMessage)
-  app.component('video-message', AudioMessage)
+  app.component('video-message', VideoMessage)
   app.component('invite-message', InviteMessage)
 }

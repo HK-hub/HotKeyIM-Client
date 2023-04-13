@@ -8,6 +8,7 @@ import VoteMessage from './VoteMessage.vue'
 import RevokeMessage from './RevokeMessage.vue'
 import SystemTextMessage from './SystemTextMessage.vue'
 import AudioMessage from './AudioMessage.vue'
+import VideoMessage from './VideoMessage.vue'
 import InviteMessage from './InviteMessage.vue'
 
 export {
@@ -21,5 +22,6 @@ export {
   RevokeMessage,
   SystemTextMessage,
   AudioMessage,
+  VideoMessage,
   InviteMessage,
 }

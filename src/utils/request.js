@@ -30,6 +30,10 @@ const errorHandler = error => {
 
 // 请求拦截器
 request.interceptors.request.use(config => {
+
+    // 跨域解决
+    config.headers['Access-Control-Allow-Origin'] = '*'
+
     const token = getAccessToken()
     // console.log('请求拦截：', token)
     if (token) {

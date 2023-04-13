@@ -212,8 +212,8 @@ loadChatRecord()
 
                         <!-- 文件 - 视频消息 -->
                         <video-message
-                            v-else-if="item.msg_type == 2 && item.file.type == 3"
-                            :src="item.file.url"
+                            v-else-if="item.messageType == 6 && item.extra.fileSubType == 2"
+                            :src="item.url || item.extra.url"
                         />
 
                         <!-- 文件消息 -->

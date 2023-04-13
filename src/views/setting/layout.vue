@@ -38,7 +38,7 @@ const menus = [
 </script>
 
 <template>
-  <IMLayout :index="4">
+  <IMLayout :index="5">
     <SubViewLayout title="我的设置" :menus="menus" />
   </IMLayout>
 </template>

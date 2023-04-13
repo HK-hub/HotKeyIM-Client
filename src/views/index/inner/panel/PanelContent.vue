@@ -428,6 +428,14 @@ onMounted(() => {
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
 
+                            <!-- 视频文件 -->
+                            <video-message
+                                v-else-if="
+                  item.messageType == 6 && item.extra.url && item.extra.fileSubType == 3"
+                                :src="item.url || item.extra.url"
+                                @contextmenu.prevent="onContextMenu($event, item)"
+                            />
+
                             <!-- 文件消息 -->
                             <file-message
                                 v-else-if="

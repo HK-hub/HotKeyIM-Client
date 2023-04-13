@@ -22,6 +22,7 @@ import MeEditorVote from './MeEditorVote.vue'
 import MeEditorEmoticon from './MeEditorEmoticon.vue'
 import MeEditorCode from './MeEditorCode.vue'
 import MeEditorRecorder from './MeEditorRecorder.vue'
+import MeMapContainer from './MeMapContainer.vue'
 import MeMention from './MeMention.vue'
 import MeVideoCaller from './MeVideoCaller.vue'
 
@@ -381,6 +382,10 @@ const onRecorderEvent = file => {
     isShowEditorRecorder.value = false
 }
 
+const onMapLocationEvent = location => {
+    emit('editor-event', emitCall('location_event', location))
+}
+
 const navs = reactive([
     {
         title: '图片',
@@ -575,6 +580,13 @@ const onMention = (id, name) => {
         v-if="isShowEditorRecorder"
         @on-submit="onRecorderEvent"
         @close="isShowEditorRecorder = false"
+    />
+
+    <!-- 地图组件 -->
+    <MeMapContainer
+        v-if="isShowEditorLocation"
+        @on-submit="onMapLocationEvent"
+        @close="isShowEditorLocation = false"
     />
 
     <MeVideoCaller

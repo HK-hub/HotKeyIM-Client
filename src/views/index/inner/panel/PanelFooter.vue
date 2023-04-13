@@ -141,6 +141,13 @@ const onSendFileEvent = ({data}) => {
     )
 }
 
+
+// 发送位置消息
+const onSendLocationEvent = ({data}) => {
+    //
+    console.log('onSendLocationEvent: 发送位置消息：', data)
+}
+
 // 发送语音消息
 const onSendVoiceEvent = ({data}) => {
     let maxsize = 100 * 1024 * 1024
@@ -213,6 +220,7 @@ const evnets = {
     image_event: onSendImageEvent,
     code_event: onSendCodeEvent,
     file_event: onSendFileEvent,
+    location_event: onSendLocationEvent,
     voice_event: onSendVoiceEvent,
     input_event: onInputEvent,
     vote_event: onSendVoteEvent,
