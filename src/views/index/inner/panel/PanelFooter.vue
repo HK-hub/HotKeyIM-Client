@@ -10,6 +10,7 @@ import {
     ServeSendTalkText,
     ServeSendTalkImage,
     ServeSendVote,
+    ServeSendLocation,
     ServeSendEmoticon,
     ServeSendTalkCodeBlock,
 } from '@/api/chat'
@@ -144,8 +145,23 @@ const onSendFileEvent = ({data}) => {
 
 // 发送位置消息
 const onSendLocationEvent = ({data}) => {
-    //
+    // data: 经纬度：latitude，longitude
     console.log('onSendLocationEvent: 发送位置消息：', data)
+
+    // 发送文本消息
+    ServeSendLocation({
+        senderId: userId,
+        receiverId: props.receiver_id,
+        talkType: props.talk_type,
+        groupId: props.talk_type == 2 ? props.receiver_id : null,
+        location: {
+            latitude: data.latitude,
+            longitude: data.longitude,
+        },
+    }).then((res) => {
+        // 发送地址消息成功
+    })
+
 }
 
 // 发送语音消息

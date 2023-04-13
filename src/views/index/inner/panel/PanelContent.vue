@@ -450,7 +450,7 @@ onMounted(() => {
 
                             <!-- 会话记录消息 -->
                             <forward-message
-                                v-else-if="item.messageType == 10"
+                                v-else-if="item.messageType == 11"
                                 :record-id="item.id"
                                 :records="item.forward.list"
                                 :num="item.forward.num"

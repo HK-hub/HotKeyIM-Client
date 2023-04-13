@@ -109,6 +109,10 @@ export const ServeSendVote = data => {
   return post('/api/v1/talk/message/vote', data)
 }
 
+// 发送位置消息
+export const ServeSendLocation = data => {
+  return post('/admin/message/send/location', data)
+}
 
 export const ServeConfirmVoteHandle = data => {
   return post('/api/v1/talk/message/vote/handle', data)

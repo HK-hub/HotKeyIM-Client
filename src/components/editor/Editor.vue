@@ -352,8 +352,6 @@ const onCodeEvent = data => {
 }
 
 
-
-
 function uploadImageChange(e) {
     openImagePreview(e.target.files[0])
 }
@@ -382,8 +380,10 @@ const onRecorderEvent = file => {
     isShowEditorRecorder.value = false
 }
 
+// 坐标：经纬度
 const onMapLocationEvent = location => {
     emit('editor-event', emitCall('location_event', location))
+    isShowEditorLocation.value = false
 }
 
 const navs = reactive([
