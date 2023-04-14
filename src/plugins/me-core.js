@@ -11,6 +11,7 @@ import {
   AudioMessage,
   VideoMessage,
   InviteMessage,
+  LocationMessage,
 } from '@/components/talk/message'
 
 export function setComponents(app) {
@@ -25,5 +26,6 @@ export function setComponents(app) {
   app.component('system-text-message', SystemTextMessage)
   app.component('audio-message', AudioMessage)
   app.component('video-message', VideoMessage)
+  app.component('location-message', LocationMessage)
   app.component('invite-message', InviteMessage)
 }

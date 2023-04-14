@@ -430,17 +430,15 @@ onMounted(() => {
 
                             <!-- 视频文件 -->
                             <video-message
-                                v-else-if="
-                  item.messageType == 6 && item.extra.url && item.extra.fileSubType == 3"
+                                v-else-if="item.messageType == 6 && item.extra.url && item.extra.fileSubType == 3"
                                 :src="item.url || item.extra.url"
+                                :recordId = item.id
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
 
                             <!-- 文件消息 -->
                             <file-message
-                                v-else-if="
-                  item.messageType == 6 && (item.url || item.content)
-                "
+                                v-else-if="item.messageType == 6 && (item.url || item.content)"
                                 :file-name="item.extra.originalFileName"
                                 :size="item.extra.size"
                                 :ext="item.extra.extension"
@@ -448,6 +446,14 @@ onMounted(() => {
                                 @contextmenu.prevent="onContextMenu($event, item)"
                             />
 
+                            <!-- 位置消息 -->
+                            <location-message
+                                v-else-if="item.messageType == 10"
+                                :address="item.content"
+                                :location="item.extra"
+                                :record-id="item.id"
+                                @contextmenu.prevent="onContextMenu($event, item)"
+                            />
                             <!-- 会话记录消息 -->
                             <forward-message
                                 v-else-if="item.messageType == 11"

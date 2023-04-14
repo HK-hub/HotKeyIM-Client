@@ -144,7 +144,7 @@ const onSendFileEvent = ({data}) => {
 
 
 // 发送位置消息
-const onSendLocationEvent = ({data}) => {
+const onSendLocationEvent = ({data, callBack}) => {
     // data: 经纬度：latitude，longitude
     console.log('onSendLocationEvent: 发送位置消息：', data)
 
@@ -159,7 +159,15 @@ const onSendLocationEvent = ({data}) => {
             longitude: data.longitude,
         },
     }).then((res) => {
-        // 发送地址消息成功
+        if (res.success && res.code == 200) {
+            // 发送地址消息成功
+            callBack(true)
+        } else {
+            $message.warning(res.data)
+        }
+
+    }).catch(res => {
+        $message.warning("发送位置消息失败!")
     })
 
 }

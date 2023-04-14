@@ -74,7 +74,7 @@ const loadChatRecord = () => {
         fromTime: model.fromTime,
     }
 
-    if (model.recordId === 0 || model.sequence === 0) {
+    if (model.sequence === 0) {
         model.loading = true
     } else {
         model.loadMore = true
@@ -91,7 +91,7 @@ const loadChatRecord = () => {
 
         let items = res.data.messageVOList || []
 
-        records.value.push(...items)
+        records.value.push(...items.reverse())
 
         if (items.length) {
             // 最小的id
@@ -240,6 +240,15 @@ loadChatRecord()
                             :code="item.content || item.extra.code"
                             :lang="item.extra.lang"
                             :name="item.extra.name"
+                        />
+
+                        <!-- 位置消息 -->
+                        <location-message
+                            v-else-if="item.messageType == 10"
+                            :address="item.content"
+                            :location="item.extra"
+                            :record-id="item.id"
+                            @contextmenu.prevent="onContextMenu($event, item)"
                         />
 
                         <!-- 投票消息 -->

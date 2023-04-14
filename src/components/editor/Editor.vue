@@ -381,8 +381,11 @@ const onRecorderEvent = file => {
 }
 
 // 坐标：经纬度
-const onMapLocationEvent = location => {
-    emit('editor-event', emitCall('location_event', location))
+const onMapLocationEvent = data => {
+    const msg = emitCall('location_event', data, isBool => {
+        isShowEditorLocation.value = false
+    })
+    emit('editor-event', msg)
     isShowEditorLocation.value = false
 }
 

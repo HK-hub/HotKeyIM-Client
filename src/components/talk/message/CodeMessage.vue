@@ -45,6 +45,9 @@ const isFullCat = ref(false)
 </template>
 <style lang="less" scoped>
 .code-message {
+
+    max-width: 330px;
+    max-height: 200px;
     border-radius: 10px;
     overflow: hidden;
     overflow-x: auto;

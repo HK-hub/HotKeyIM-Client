@@ -9,19 +9,21 @@ import RevokeMessage from './RevokeMessage.vue'
 import SystemTextMessage from './SystemTextMessage.vue'
 import AudioMessage from './AudioMessage.vue'
 import VideoMessage from './VideoMessage.vue'
+import LocationMessage from './LocationMessage.vue'
 import InviteMessage from './InviteMessage.vue'
 
 export {
-  CodeMessage,
-  TextMessage,
-  LoginMessage,
-  FileMessage,
-  ForwardMessage,
-  ImageMessage,
-  VoteMessage,
-  RevokeMessage,
-  SystemTextMessage,
-  AudioMessage,
-  VideoMessage,
-  InviteMessage,
+    CodeMessage,
+    TextMessage,
+    LoginMessage,
+    FileMessage,
+    ForwardMessage,
+    ImageMessage,
+    VoteMessage,
+    RevokeMessage,
+    SystemTextMessage,
+    AudioMessage,
+    VideoMessage,
+    LocationMessage,
+    InviteMessage,
 }

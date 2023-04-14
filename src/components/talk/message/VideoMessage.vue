@@ -8,7 +8,11 @@ const props = defineProps({
     src: {
         type: String,
         default: 'https://vjs.zencdn.net/v/oceans.mp4',
-    }
+    },
+    recordId: {
+        type: String,
+        default: '',
+    },
 })
 
 const player = shallowRef()
