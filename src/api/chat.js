@@ -118,6 +118,11 @@ export const ServeConfirmVoteHandle = data => {
   return post('/api/v1/talk/message/vote/handle', data)
 }
 
+// url 链接预览元数据
+export const ServeUrlPreviewMetaData = data => {
+  return get('/admin/preview/url', data)
+}
+
 
 // 发起视频通话
 export const ServerInviteVideoCall = data => {

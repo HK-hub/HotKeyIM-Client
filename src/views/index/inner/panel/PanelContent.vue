@@ -117,6 +117,7 @@ const onLoadTalk = () => {
             socket.emit('event_talk_read', {
                 receiver_id: props.receiver_id,
                 msg_id: msgIds,
+                sender_id: userId,
             })
         }
 
@@ -506,7 +507,7 @@ onMounted(() => {
                                 class="read-status"
                             >
                                 <n-icon
-                                    v-if="item.signFlag === 1"
+                                    v-if="item.signFlag === 2"
                                     size="18"
                                     color="#65c468"
                                     :component="CheckmarkCircleOutline"

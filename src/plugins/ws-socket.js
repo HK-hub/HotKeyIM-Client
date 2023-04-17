@@ -14,7 +14,9 @@ class WsSocket {
     config = {
         heartbeat: {
             setInterval: null,
+            // ping 间隔时间=20s
             pingInterval: 20000,
+            // ping 超时时间=60
             pingTimeout: 60000,
         },
         reconnect: {
@@ -58,7 +60,7 @@ class WsSocket {
             this.config.heartbeat.pingInterval = data.ping_interval * 1000
             this.config.heartbeat.pingTimeout = data.ping_timeout * 1000
             this.heartbeat()
-            this.connect.send('{"event":"heartbeat","content":"ping"}')
+            this.connect.send('{"event":"heartbeat","data":"ping"}')
         })
     }
 
@@ -117,12 +119,13 @@ class WsSocket {
      * @param {Object} evt Websocket 消息
      */
     onParse(evt) {
-        const { event, message } = JSON.parse(evt.data)
+        const obj = JSON.parse(evt.data)
         console.log('解析接受的消息',evt.data)
         return {
-            event: event,
-            data: message,
-            originData: evt.data,
+            event: obj.event,
+            data: obj.message,
+            content: obj.content,
+            originData: obj,
         }
     }
 
@@ -132,6 +135,7 @@ class WsSocket {
      * @param {Object} evt Websocket 消息
      */
     onOpen(evt) {
+        // 最后心跳时间
         this.lastTime = new Date().getTime()
 
         this.events.onOpen(evt)
@@ -194,6 +198,7 @@ class WsSocket {
         this.config.heartbeat.setInterval = setInterval(() => {
             let t = new Date().getTime()
 
+            // 当前时间 - 最后获取心跳时间 > 心跳最大超时时间
             if (t - this.lastTime > this.config.heartbeat.pingTimeout) {
                 if (this.connect) {
                     this.connect.close()
@@ -207,16 +212,17 @@ class WsSocket {
     }
 
     ping() {
-        this.connect.send('{"event":"heartbeat","content":"ping"}')
+        console.log('client websocket ping:', new Date())
+        this.connect.send('{"event":"heartbeat","data":"ping"}')
     }
 
     /**
      * 聊天发送数据
      *
-     * @param {Object} mesage
+     * @param {Object} message
      */
-    send(mesage) {
-        this.connect.send(JSON.stringify(mesage))
+    send(message) {
+        this.connect.send(JSON.stringify(message))
     }
 
     /**

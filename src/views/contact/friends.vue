@@ -6,6 +6,7 @@ import UserCardModal from '@/components/user/UserCardModal.vue'
 import MemberCard from './inner/MemberCard.vue'
 import ApplyListModal from './inner/ApplyListModal.vue'
 import UserSearchModal from './inner/UserSearchModal.vue'
+import UserFindModal from './inner/UserFindModal.vue'
 import {modal} from '@/utils/common'
 import {toTalk} from '@/utils/talk'
 import {useUserStore} from '@/store/user'
@@ -14,6 +15,7 @@ import {ServeGetContacts} from '@/api/contacts'
 const userStore = useUserStore()
 const isShowDrawer = ref(false)
 const isShowUserSearch = ref(false)
+const isShowUserFind = ref(false)
 const keywords = ref('')
 const index = ref(0)
 const selectGroup = ref('')
@@ -105,6 +107,9 @@ const onToolsMenu = value => {
         case 'group':
             window.$message.info('待完善...')
             break
+        case 'find':
+            isShowUserFind.value = true
+            break
     }
 }
 
@@ -152,6 +157,10 @@ onLoadData()
               {
                 label: '添加好友',
                 key: 'add',
+              },
+              {
+                label: '发现好友',
+                key: 'find',
               },
               {
                 label: '分组管理',
@@ -213,6 +222,9 @@ onLoadData()
 
     <!-- 用户查询模态框 -->
     <UserSearchModal v-model:show="isShowUserSearch"/>
+
+    <UserFindModal v-model:show="isShowUserFind"/>
+
 </template>
 
 <style lang="less" scoped>

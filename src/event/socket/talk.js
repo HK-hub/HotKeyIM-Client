@@ -195,7 +195,7 @@ class Talk extends Base {
    * 插入对话记录
    */
   insertTalkRecord() {
-    console.log('插入会话记录')
+    console.log('插入会话记录：', this.resource)
     let record = this.resource
 
     useDialogueStore().addDialogueRecord(
@@ -210,6 +210,7 @@ class Talk extends Base {
         socket.emit('event_talk_read', {
           receiver_id: this.sender_id,
           msg_id: [this.resource.id],
+          sender_id: this.sender_id,
         })
       }, 1000)
     }

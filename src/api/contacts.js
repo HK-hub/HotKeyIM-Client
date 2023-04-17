@@ -20,6 +20,12 @@ export const ServeSearchContact = data => {
     return post('/admin/find/friend/account', data)
 }
 
+
+// 发现好友
+export const ServeFindContact = data => {
+    return post('/admin/find/friend/search', data)
+}
+
 // 好友申请服务接口
 export const ServeCreateContact = data => {
     return post('/admin/find/friend/apply', data)

@@ -66,7 +66,7 @@ class Socket {
         this.socket.connection()
     }
 
-    // 连接 WebSocket 服务
+    // 断开连接 WebSocket 服务
     disconnect() {
         this.socket.close()
     }
@@ -85,6 +85,7 @@ class Socket {
     register() {
         this.socket.on('heartbeat', data => {
             if (data === 'ping') {
+                console.log('收到ping消息：', data)
                 this.emit('heartbeat', 'pong')
             }
         })
@@ -94,10 +95,10 @@ class Socket {
 
         this.socket.on('event_talk_read', data => {
             const dialogueStore = useDialogueStore()
-
+            console.log('收到消息确认回执：', data)
             if (dialogueStore.index_name == `1_${data.sender_id}`) {
                 for (const msgid of data.ids) {
-                    dialogueStore.updateDialogueRecord({id: msgid, is_read: 1})
+                    dialogueStore.updateDialogueRecord({id: msgid, signFlag: 2})
                 }
             }
         })

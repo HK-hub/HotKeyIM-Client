@@ -592,6 +592,7 @@ const onMention = (id, name) => {
         @close="isShowEditorLocation = false"
     />
 
+    <!-- 音视频通话 -->
     <MeVideoCaller
         v-if="isShowEditorVideo"
         :conversationType="conversationType.type"
