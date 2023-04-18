@@ -210,7 +210,7 @@ class Talk extends Base {
         socket.emit('event_talk_read', {
           receiver_id: this.sender_id,
           msg_id: [this.resource.id],
-          sender_id: this.sender_id,
+          sender_id: this.receiver_id,
         })
       }, 1000)
     }

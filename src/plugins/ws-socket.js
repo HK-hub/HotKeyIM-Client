@@ -120,10 +120,10 @@ class WsSocket {
      */
     onParse(evt) {
         const obj = JSON.parse(evt.data)
-        console.log('解析接受的消息',evt.data)
+        console.log('解析接受的消息', obj)
         return {
             event: obj.event,
-            data: obj.message,
+            data: obj.message || JSON.parse(obj.data),
             content: obj.content,
             originData: obj,
         }
