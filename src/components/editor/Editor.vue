@@ -2,7 +2,6 @@
 import {reactive, ref, markRaw, computed, onMounted} from 'vue'
 import {useDialogueStore} from '@/store/dialogue'
 import {useEditorStore} from '@/store/editor'
-
 import {NPopover, NDialog} from 'naive-ui'
 import {
     HappyOutline,
@@ -389,7 +388,11 @@ const onMapLocationEvent = data => {
     isShowEditorLocation.value = false
 }
 
-//
+// 开始音视频通话消息
+const onAudioVideoCallEvent = data => {
+
+
+}
 
 const navs = reactive([
     {

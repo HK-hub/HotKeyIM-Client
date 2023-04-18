@@ -25,6 +25,11 @@ export const ServeGetUserDetail = (data) => {
     return get('/admin/info/detail', data)
 }
 
+// 查询用户profile服务接口
+export const ServeGetUserProfile = (data) => {
+    return get('/admin/user/profile', data)
+}
+
 // 获取用户相关设置信息
 export const ServeGetUserSetting = userId => {
     return get('/admin/user/' + userId)
