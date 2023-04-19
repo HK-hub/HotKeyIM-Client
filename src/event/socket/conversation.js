@@ -1,5 +1,6 @@
 // 语音通话，视频通话
 import Base from './base'
+import HRTCEngine from '@/event/socket/rtc'
 
 // 信令
 const SIGNALING_TYPE = "signaling-event";
@@ -61,6 +62,8 @@ export class Conversation extends Base {
      */
     remoteVideo;
 
+    hrtc;
+
     ICE = {
         iceServers: [
             {
@@ -106,14 +109,14 @@ export class Conversation extends Base {
         // 初始化对象
         this.initProperties()
         console.log('初始化conversation对象属性：', this)
+        // 初始化webSocket连接
+        this.hrtc = new HRTCEngine('ws://localhost:5000/')
     };
 
 
     // 初始化对象属性
     initProperties() {
         this.sender_id = super.getAccountId();
-        // this.localVideo = document.getElementById('local-video')
-        // this.remoteVideo = document.getElementById('remote-video')
         console.log('this.localVideo,this.remoteVideo:', this.localVideo, this.remoteVideo)
     };
 
@@ -126,16 +129,7 @@ export class Conversation extends Base {
                 // 消除噪音
                 noiseSuppression: true
             },  // 是否捕获音频
-            video: {  // 视频相关设置
-                width: {
-                    min: 381, // 当前视频的最小宽度
-                    max: 640,
-                },
-                height: {
-                    min: 200, // 最小高度
-                    max: 480
-                },
-            }
+            video: true,
         })
             .then( (stream) => {
                 // 打开本地Stream成功
@@ -145,12 +139,10 @@ export class Conversation extends Base {
 
     };
 
-
     // 获取本地媒体信息成功，打开本地码流
     openLocalStream(stream) {
         console.log('local stream, video:', stream, this.localVideo);
         // 加入房间
-
         this.localVideo.srcObject = stream;
         this.localStream = stream;
     };
@@ -161,18 +153,29 @@ export class Conversation extends Base {
         $message.warning('抱歉您的设备不支持音视频通话!');
     };
 
-
     // 点击呼叫
     clickCall() {
         // 点击加入按钮
         console.log('点击点入按钮');
         // 初始化本地码流
         this.initLocalSteam();
-        // 向服务器发送消息请求
+
     };
 
 
-    // 点击加入按钮
+    // 挂断
+    hangup() {
+        console.log('挂断电话')
+        const stream = this.localVideo.srcObject;
+        const tracks = stream.getTracks();
+        tracks.forEach(function (track) {
+            track.stop();
+        });
+        this.localVideo.srcObject = null
+        this.localStream = null
+    }
+
+    // 加入房间
     doJoin(roomId) {
         const joinMessage = {
             cmd: SIGNALING_TYPE_JOIN,
@@ -180,14 +183,12 @@ export class Conversation extends Base {
             userId: this.sender_id,
             receiverId: this.receiver_id
         };
-        this.sendSignalingMessage()
+        this.sendSignalingMessage(joinMessage)
     }
-
 
     // 发送信令消息
     sendSignalingMessage (data) {
         // 发送数据到webSocket 协议的信令服务器
+        this.hrtc.send(JSON.stringify(data))
     }
-
-
 }

@@ -12,7 +12,7 @@ import {
     ServeSendVote,
     ServeSendLocation,
     ServeSendEmoticon,
-    ServeSendTalkCodeBlock,
+    ServeSendTalkCodeBlock,ServeSendVideoInvite,
 } from '@/api/chat'
 import {throttle} from '@/utils/common'
 import Editor from '@/components/editor/Editor.vue'
@@ -172,6 +172,20 @@ const onSendLocationEvent = ({data, callBack}) => {
 
 }
 
+// 发送音视频通话消息
+const onAudioVideoEvent = ({data, callBack}) => {
+    console.log('发送视频邀请消息：')
+    ServeSendVideoInvite({data}).then(res => {
+        if (res.code == 200 && res.success) {
+            console.log('发起视频通话成功!')
+        } else {
+            $message.warning('抱歉，发起视频通话失败!')
+        }
+    }).catch(err => {
+        $message.warning('抱歉，发起视频通话失败!')
+    })
+}
+
 // 发送语音消息
 const onSendVoiceEvent = ({data}) => {
     let maxsize = 100 * 1024 * 1024
@@ -245,6 +259,7 @@ const evnets = {
     code_event: onSendCodeEvent,
     file_event: onSendFileEvent,
     location_event: onSendLocationEvent,
+    video_event: onAudioVideoEvent,
     voice_event: onSendVoiceEvent,
     input_event: onInputEvent,
     vote_event: onSendVoteEvent,

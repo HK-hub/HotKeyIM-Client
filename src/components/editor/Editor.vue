@@ -388,10 +388,29 @@ const onMapLocationEvent = data => {
     isShowEditorLocation.value = false
 }
 
-// 开始音视频通话消息
-const onAudioVideoCallEvent = data => {
+// 音视频通话结束
+const onVideoCallHangup = data => {
 
+    // 显示结束
+    isShowEditorVideo.value = false
+}
 
+// 开始视频通话，将房间号，接收者发送给服务端进行推送
+const onAudioVideoCallEvent = cmd => {
+    console.log('发送视频邀请给服务端');
+    const data = {
+        cmd: cmd,
+        // 聊天类型
+        type: props.value.talk_type,
+        // 接听者是谁
+        listener: props.value.receiver_id,
+        // 拨打者是谁
+        dialer: props.value.uid,
+    }
+    const msg = emitCall('video_event', data, isBool => {
+        // isShowEditorLocation.value = false
+    })
+    emit('editor-event', msg)
 }
 
 const navs = reactive([
@@ -446,6 +465,7 @@ const navs = reactive([
             console.log('视频通话点击：', isShowEditorVideo)
             conversationType.type = 2
             isShowEditorVideo.value = true
+            onAudioVideoCallEvent('start')
         },
     },
    /* {
@@ -603,7 +623,7 @@ const onMention = (id, name) => {
         :conversationType="conversationType.type"
         :receiver_id="receiver_id"
         :talk_type="talk_type"
-        @on-submit="onRecorderEvent"
+        @on-submit="onVideoCallHangup"
         @close="isShowEditorVideo = false"/>
 
 
