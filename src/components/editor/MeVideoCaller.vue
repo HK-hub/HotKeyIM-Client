@@ -1,11 +1,10 @@
 <script setup>
 import {ref, onUnmounted, computed, onMounted, reactive} from 'vue'
-import {NModal, NTooltip, NSpace, NAvatar, NEllipsis} from 'naive-ui'
+import {NModal, NTooltip, NSpace, NAvatar, NEllipsis, NIcon} from 'naive-ui'
 import {MicOutline,VideocamOutline} from '@vicons/ionicons5'
 import {MicrophoneOff, VideoOff, PhoneOff, Microphone,Video,PhoneVoice,Minimize} from '@vicons/carbon'
 import {countDownTime} from '@/utils/functions'
 import {UserSwitchOutlined} from '@vicons/antd'
-import {Conversation} from '@/event/socket/conversation.js'
 import {ServeGetUserProfile} from '@/api/user'
 import {
     SIGNALING_TYPE_JOIN, SIGNALING_TYPE_RESP_JOIN, SIGNALING_TYPE_NEW_PEER, SIGNALING_TYPE_OFFER
@@ -33,6 +32,10 @@ const props = defineProps({
     roomId: {
         type: String,
         default: ''
+    },
+    invite: {
+        type: Object,
+        default: null
     }
 })
 const model = reactive({
@@ -63,6 +66,7 @@ const mini = ref(false)
 // 0 未开始 1呼叫中 2通话中 3通话结束
 const status = ref(0)
 const animation = ref(false)
+const accept =ref(false)
 // 通话时长
 const duration = ref(0)
 const currentStream = 1;
@@ -94,9 +98,9 @@ const onOpenMicrophone = () => {
 }
 
 // 关闭麦克风
-const onCloseMicrophone = () => {
+const onMuted = () => {
     console.log('关闭麦克风')
-    openMicrophone.value = false
+    openMicrophone.value = !openMicrophone.value
 }
 
 // 打开摄像头
@@ -122,7 +126,7 @@ const switchShowVideo = () => {
 // 挂断电话
 const onHangup = () => {
     console.log('挂断..')
-    status.value = 3
+    // status.value = 3
     onLeaveRoom()
     onDestroy()
 }
@@ -130,7 +134,6 @@ const onHangup = () => {
 // 最后销毁
 const onDestroy = () => {
     // conversation.hangup()
-
     emit('close')
 }
 
@@ -139,10 +142,13 @@ const onSubmit = () => {
 }
 
 
+// 接听电话
 const onStart = () => {
     animation.value = true
-    // 修改为呼叫中
+    // 修改为接听
     status.value = 1
+    onJoinRoom()
+    // doJoin()
 }
 
 const onVideoCall = () => {
@@ -151,13 +157,8 @@ const onVideoCall = () => {
     rv = document.getElementById('remote-video')
     console.log('视频元素对象', lv,rv)
 
-    conversation = new Conversation(lv, rv)
-
     // 修改为呼叫中
     status.value = 1
-    conversation.clickCall()
-    // 加入房间
-    conversation.doJoin()
 }
 
 const onStop = () => {
@@ -180,17 +181,28 @@ const onLoad = () => {
             myProfile.value = res.data
         }
     })
-    // 设置房间号
-    model.roomId = userId < props.receiver_id ? userId + '-' + props.receiver_id : props.receiver_id + '-' + userId;
-    // 设置用户
-    model.localUserId = userId;
+
+    // 判断是否被邀请通话
+    console.log('props 属性：', props.invite)
+    if (props.invite != null) {
+        console.log('房间号存在：', props.invite.roomId)
+        // 设置房间号
+        model.roomId = props.invite.roomId
+        // 设置用户
+        model.localUserId = props.invite.receiverId
+        model.remoteUserId = props.invite.userId
+        // 呼叫中：显示接听按钮
+        status.value = 0
+
+    } else {
+        model.roomId = userId < props.receiver_id ? userId + '-' + props.receiver_id : props.receiver_id + '-' + userId;
+        // 设置用户
+        model.localUserId = userId;
+        // 呼叫中
+        status.value = 1
+    }
+
 }
-
-
-
-
-// 当前用户
-const localUserId = JSON.parse(localStorage.getItem('IM_USERID')).value
 // 房间号
 
 // 当前模式
@@ -306,6 +318,17 @@ const onLeaveRoom = () => {
         track.stop();
     });
     localVideo.srcObject = null;
+    localStream = null
+
+    const rs = remoteVideo.srcObject;
+    const rt = rs.getTracks();
+    rt.forEach(function (track) {
+        track.stop();
+    });
+    remoteVideo.srcObject = null;
+    remoteStream = null
+
+    peerConnection = null
     // 离开房间
     doLeave();
     //
@@ -333,7 +356,10 @@ const initLocalStream = () => {
 const openLocalStream = (stream) => {
     console.log('打开本地流:', stream)
     // 加入房间
-    doJoin()
+    if (status.value == 1) {
+        // 通话开始
+        doJoin()
+    }
     // 设置本地媒体流
     localVideo.srcObject = stream;
     localStream = stream;
@@ -414,7 +440,7 @@ const createAnswerAndSendMessage = (session) => {
             const jsonMsg = {
                 cmd: SIGNALING_TYPE_ANSWER,
                 roomId: model.roomId,
-                uid: localUserId,
+                uid: model.localUserId,
                 remoteUid: model.remoteUserId,
                 msg: JSON.stringify(session)
             }
@@ -532,9 +558,11 @@ const handleResponseJoin = (message) => {
 // 处理成员离开房间事件
 const handlePeerLeave = (message) => {
     console.info('handlePeerLeave, remoteUid=' + message.remoteUid + ' , roomId=' + message.roomId)
-    remoteVideo.srcObject = null
-    remoteStream = null
-    remoteVideo.poster = null
+    /*remoteVideo.srcObject = null
+    remoteStream = null*/
+
+    // 挂断电话
+    onHangup()
 }
 
 
@@ -546,15 +574,21 @@ onMounted(() => {
     remoteVideo = rv
     console.log('视频元素对象', lv,rv)
 
-    // conversation = new Conversation(lv, rv)
     animation.value = props.conversationType.type == 1
 
     // 加载数据
     onLoad()
-    // 开始呼叫
-    // onVideoCall(model.roomId)
-    // 进入房间
-    onJoinRoom()
+
+    if (status.value == 0) {
+        // 如果 存在有人邀请，则需要进行点击确认
+        console.log('存在有人邀请，则需要进行点击确认')
+        initLocalStream()
+    } else {
+        // 自己呼叫的，进入房间
+        /*onJoinRoom()
+        doJoin()*/
+        onStart()
+    }
 })
 
 onUnmounted(() => {
@@ -594,8 +628,13 @@ onUnmounted(() => {
         </main>
         <template #footer>
             <n-space justify="center">
-                <n-button>静音</n-button>
-                <n-button type="error" @click="onHangup">挂断</n-button>
+                <n-button @click="onMuted">
+                    <n-icon>
+                        <MicOutline v-if="openMicrophone == true"/>
+                    </n-icon>
+                </n-button>
+                <n-button v-show="status == 1" type="error" @click="onHangup">挂断</n-button>
+                <n-button v-show="status == 0" type="primary" @click="onStart">接听</n-button>
                 <n-button>视频</n-button>
             </n-space>
         </template>

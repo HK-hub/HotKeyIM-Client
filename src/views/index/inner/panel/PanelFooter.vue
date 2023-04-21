@@ -174,8 +174,8 @@ const onSendLocationEvent = ({data, callBack}) => {
 
 // 发送音视频通话消息
 const onAudioVideoEvent = ({data, callBack}) => {
-    console.log('发送视频邀请消息：')
-    ServeSendVideoInvite({data}).then(res => {
+    console.log('发送视频邀请消息：', data)
+    ServeSendVideoInvite(data).then(res => {
         if (res.code == 200 && res.success) {
             console.log('发起视频通话成功!')
         } else {

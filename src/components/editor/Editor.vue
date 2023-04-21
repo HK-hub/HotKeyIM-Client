@@ -397,15 +397,15 @@ const onVideoCallHangup = data => {
 
 // 开始视频通话，将房间号，接收者发送给服务端进行推送
 const onAudioVideoCallEvent = cmd => {
-    console.log('发送视频邀请给服务端');
+    console.log('发送视频邀请给服务端:', props, cmd);
     const data = {
         cmd: cmd,
         // 聊天类型
-        type: props.value.talk_type,
+        type: props.talk_type,
         // 接听者是谁
-        listener: props.value.receiver_id,
+        listener: props.receiver_id,
         // 拨打者是谁
-        dialer: props.value.uid,
+        dialer: props.uid,
     }
     const msg = emitCall('video_event', data, isBool => {
         // isShowEditorLocation.value = false

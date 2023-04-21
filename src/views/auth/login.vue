@@ -51,7 +51,7 @@ const onLogin = () => {
     response.then((res) => {
         if (res.success) {
             $message.success("登录成功！");
-            console.log(res);
+            console.log('登录成功：',res.data.expiresIn)
             // 设置token
             setAccessToken(res.data.accessToken, res.data.expiresIn);
             // 连接websocket

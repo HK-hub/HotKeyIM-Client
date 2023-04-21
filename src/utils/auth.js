@@ -26,6 +26,7 @@ export function getAccessToken() {
  * @returns token
  */
 export function setAccessToken(token = '', expire = 60 * 60 * 2) {
+    console.log('设置access Token:', expire)
     return storage.set(AccessToken, token, expire) || ''
 }
 

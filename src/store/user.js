@@ -62,37 +62,37 @@ export const useUserStore = defineStore('user', {
         // 加载用户信息
         loadSetting(userId) {
             ServeGetUserSetting(userId).then(({ code, data }) => {
-                console.log("loadSetting:" + data);
+                console.log("loadSetting uid=:" + data.id);
                 if (code == 200) {
-                    this.account = data.account,
-                        this.nickname = data.nickname,
-                        this.username = data.nickname,
-                        this.uid = data.id,
-                        this.avatar = data.miniAvatar,
-                        this.bigAvatar = data.bigAvatar,
-                        this.miniAvatar = data.miniAvatar,
-                        this.gender = data.gender,
-                        this.mobile = data.phone || '',
-                        this.email = data.email || '',
-                        this.signature = data.signature,
-                        this.motto = data.signature,
-                        this.age = data.age,
-                        this.birthday = data.birthday,
-                        this.campus = data.campus,
-                        this.city = data.city,
-                        this.constellation = data.constellation,
-                        this.dingtalk = data.dingtalk,
-                        this.github = data.github,
-                        this.interest = data.interest,
-                        this.job = data.job,
-                        this.major = data.major,
-                        this.qq = data.qq,
-                        this.qrcode = data.qrcode,
-                        this.status = data.status,
-                        this.tag = data.tag,
-                        this.wechat = data.wechat,
-                        this.wallet = data.wallet,
-                        this.isQiye = data.is_qiye || false
+                    this.account = data.account
+                    this.nickname = data.nickname
+                    this.username = data.nickname
+                    this.uid = data.id
+                    this.avatar = data.miniAvatar
+                    this.bigAvatar = data.bigAvatar
+                    this.miniAvatar = data.miniAvatar
+                    this.gender = data.gender
+                    this.mobile = data.phone || ''
+                    this.email = data.email || ''
+                    this.signature = data.signature
+                    this.motto = data.signature
+                    this.age = data.age
+                    this.birthday = data.birthday
+                    this.campus = data.campus
+                    this.city = data.city
+                    this.constellation = data.constellation
+                    this.dingtalk = data.dingtalk
+                    this.github = data.github
+                    this.interest = data.interest
+                    this.job = data.job
+                    this.major = data.major
+                    this.qq = data.qq
+                    this.qrcode = data.qrcode
+                    this.status = data.status
+                    this.tag = data.tag
+                    this.wechat = data.wechat
+                    this.wallet = data.wallet
+                    this.isQiye = data.is_qiye || false
                     storage.set('user_info', data)
                     storage.set('userId', data.id)
                 }

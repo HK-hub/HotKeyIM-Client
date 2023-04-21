@@ -5,6 +5,7 @@ import {useDialogueStore} from '@/store/dialogue'
 import {getAccessToken, isLoggedIn} from './utils/auth'
 import WsSocket from './plugins/ws-socket'
 import EventTalk from './event/socket/talk'
+import EventConversation from './event/socket/conversation'
 import EventKeyboard from './event/socket/keyboard'
 import EventLogin from './event/socket/login'
 import {NAvatar} from 'naive-ui'
@@ -132,7 +133,8 @@ class Socket {
             useUserStore().isContactApply = true
         })
 
-        //
+        // 信令事件
+        this.socket.on('signaling-event', data => new EventConversation(data))
 
         // 错误事件
         this.socket.on('event_error', data => {
