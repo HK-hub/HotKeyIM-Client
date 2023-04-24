@@ -13,8 +13,9 @@ const props = defineProps({
 const groupSetting = reactive({})
 const emit = defineEmits(['close'])
 
-const isShow = ref(false)
+const isShow = ref(true)
 const loading = ref(false)
+const show = ref(false)
 
 const onMaskClick = () => {
     emit('close')
@@ -45,6 +46,7 @@ const onSubmit = () => {
 
 // 加载群聊设置
 const onLoadData = () => {
+    console.log('执行加载设置')
     ServeGetGroupApplySetting({
         groupId: props.gid
     }).then(res => {
@@ -52,6 +54,7 @@ const onLoadData = () => {
             groupSetting.value = res.data
             console.log('群聊设置：', groupSetting.value.joinType, groupSetting.value.problem)
         }
+        show.value = true
     }).catch(err => {
         $message.info("获取群聊设置信息失败!")
     })
@@ -61,42 +64,43 @@ onLoadData()
 </script>
 
 <template>
-    <n-modal
-        v-model:show="isShow"
-        preset="card"
-        title="入群申请"
-        size="huge"
-        style="max-width: 450px;border-radius: 10px;"
-        :on-after-leave="onMaskClick"
-    >
-        <n-form>
-            <n-form-item v-if="groupSetting.joinType == 3" label="加群验证问题">
-                <p>{{groupSetting.problem}}</p>
-            </n-form-item>
-            <n-form-item label="申请备注" required>
-                <n-input
-                    placeholder="请填写申请备注"
-                    type="textarea"
-                    v-model:value="remark"
-                />
-            </n-form-item>
-        </n-form>
+    <div v-if="show">
+        <n-modal
+            v-model:show="isShow"
+            preset="card"
+            title="入群申请"
+            size="huge"
+            style="max-width: 450px;border-radius: 10px;"
+            :on-after-leave="onMaskClick"
+        >
 
-        <template #footer>
-            <div style="width: 100%; text-align: right">
-                <n-button type="tertiary" @click="onMaskClick"> 取消</n-button>
-                <n-button
-                    type="primary"
-                    class="mt-l15"
-                    :loading="loading"
-                    :disabled="!remark"
-                    @click="onSubmit"
-                >
-                    提交
-                </n-button>
-            </div>
-        </template>
-    </n-modal>
+            <n-form>
+                <p v-if="groupSetting.value.joinType == 3">加群申请问题：{{groupSetting.value.problem}}</p>
+                <n-form-item label="申请备注" required>
+                    <n-input
+                        placeholder="请填写申请备注"
+                        type="textarea"
+                        v-model:value="remark"
+                    />
+                </n-form-item>
+            </n-form>
+
+            <template #footer>
+                <div style="width: 100%; text-align: right">
+                    <n-button type="tertiary" @click="onMaskClick"> 取消</n-button>
+                    <n-button
+                        type="primary"
+                        class="mt-l15"
+                        :loading="loading"
+                        :disabled="!remark"
+                        @click="onSubmit"
+                    >
+                        提交
+                    </n-button>
+                </div>
+            </template>
+        </n-modal>
+    </div>
 </template>
 
 <style lang="less" scoped></style>
