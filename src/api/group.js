@@ -5,8 +5,9 @@ export const ServeGetGroups = (data) => {
   return get('/admin/group/list', data)
 }
 
+// 获取公开群组
 export const ServeGroupOvertList = (data) => {
-  return get('/api/v1/group/overt/list',data)
+  return get('/admin/find/group/public',data)
 }
 
 // 获取群信息服务接口
@@ -82,6 +83,13 @@ export const ServeAgreeGroupApply = data => {
   return post('/api/v1/group/apply/agree', data)
 }
 
+// 获取群聊加群方式
+export const ServeGetGroupApplySetting = data => {
+
+  return get('/admin/group/apply/setting', data)
+}
+
+// 创建加群申请
 export const ServeCreateGroupApply = data => {
   return post('/api/v1/group/apply/create', data)
 }

@@ -33,7 +33,7 @@ const onLoadData = () => {
   })
     .then(res => {
       if (res.code == 200) {
-        let list = res.data.items || []
+        let list = res.data.rows || []
 
         if (search.page == 1) {
           items.value = list
@@ -60,6 +60,13 @@ const onSearchInput = debounce(value => {
 
   onLoadData()
 }, 300)
+
+
+// 查看信息
+const onInfo = item => {
+    // 查看信息
+    $message.warning('功能等待开发!')
+}
 
 const onToTalk = item => {
   toTalk(2, item.id)
@@ -110,11 +117,11 @@ onLoadData()
           <div class="cards">
             <GroupCard
               v-for="item in items"
-              :avatar="item.avatar"
-              :username="item.name"
+              :avatar="item.groupAvatar"
+              :username="item.groupName"
               :gender="item.gender"
-              :motto="item.profile"
-              :flag="item.count + '/' + item.max_num"
+              :motto="item.description"
+              :flag="item.memberCount + '/' + item.groupSetting.memberCapacity"
               :is-member="false"
               @click="onInfo(item)"
               @talk="onToTalk(item)"

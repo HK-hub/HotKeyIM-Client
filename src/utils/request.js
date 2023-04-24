@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { delAccessToken, getAccessToken } from '@/utils/auth'
+import {delAccessToken, getAccessToken} from '@/utils/auth'
 import {v4 as uuidv4} from 'uuid';
 
 // 创建 axios 实例
@@ -42,8 +42,7 @@ request.interceptors.request.use(config => {
     }
 
     // traceId
-    const traceId = uuidv4()
-    config.headers['traceId'] = traceId;
+    config.headers['traceId'] = uuidv4();
     // console.log('traceId=', traceId)
 
     // sign 签名验证
