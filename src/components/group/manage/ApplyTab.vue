@@ -19,6 +19,7 @@ const props = defineProps({
     default: 0,
   },
 })
+const userId = JSON.parse(localStorage.getItem('IM_USERID')).value
 
 const keywords = ref('')
 const batchDelete = ref(false)
@@ -30,13 +31,14 @@ const filterSearch = computed(() => {
   }
 
   return items.value.filter(item => {
-    return item.nickname.match(keywords.value) != null
+    return item.senderVO.username.match(keywords.value) != null
   })
 })
 
 const onLoadData = () => {
   ServeGetGroupApplyList({
-    group_id: props.id,
+      userId: userId,
+      groupId: props.id,
   }).then(res => {
     if (res.code == 200) {
       let data = res.data || []
@@ -51,9 +53,15 @@ const onRowClick = item => {
   }
 }
 
+
+// 同意加群
 const onAgree = item => {
   ServeAgreeGroupApply({
-    apply_id: item.id,
+      type: 2,
+      applyId: item.id,
+      handlerId: userId,
+      operation: 2,
+      info: '',
   }).then(res => {
     if (res.code == 200) {
       onLoadData()
@@ -119,11 +127,11 @@ onLoadData()
         <div class="content pointer o-hidden">
           <div class="item-title">
             <p class="nickname text-ellipsis">
-              <span>{{ item.nickname }}</span>
-              <span class="date mt-l15">{{ item.created_at }}</span>
+              <span>{{ item.senderVO.username }}</span>
+              <span class="date mt-l15">{{ item.createTime }}</span>
             </p>
           </div>
-          <div class="item-text text-ellipsis">备注: {{ item.remark }}</div>
+          <div class="item-text text-ellipsis">备注: {{ item.applyInfo }}</div>
         </div>
 
         <div class="tool flex-center">

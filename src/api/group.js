@@ -22,7 +22,7 @@ export const ServeCreateGroup = data => {
 
 //  修改群信息
 export const ServeEditGroup = data => {
-  return post('/api/v1/group/setting', data)
+  return post('/admin/group/info/base/edit', data)
 }
 
 // 邀请好友加入群聊服务接口
@@ -30,9 +30,9 @@ export const ServeInviteGroup = data => {
   return post('/admin/member/invite', data)
 }
 
-// 移除群聊成员服务接口
+// 移除群聊成员服务接口：踢出群聊
 export const ServeRemoveMembersGroup = data => {
-  return post('/api/v1/group/member/remove', data)
+  return post('/admin/member/remove', data)
 }
 
 // 管理员解散群聊服务接口
@@ -42,7 +42,7 @@ export const ServeDismissGroup = data => {
 
 // 用户退出群聊服务接口
 export const ServeSecedeGroup = data => {
-  return post('/api/v1/group/secede', data)
+  return post('/admin/member/quit', data)
 }
 
 // 修改群聊名片服务接口
@@ -62,25 +62,26 @@ export const ServeGetGroupMembers = data => {
 
 //  获取群组公告列表
 export const ServeGetGroupNotices = data => {
-  return get('/api/v1/group/notice/list', data)
+  return get('/admin/announcement/group/list', data)
 }
 
-//  编辑群公告
+// 编辑群公告
 export const ServeEditGroupNotice = data => {
-  return post('/api/v1/group/notice/edit', data)
+  return post('/admin/announcement/edit', data)
 }
 
-
+// 获取群聊加群申请单
 export const ServeGetGroupApplyList = data => {
-  return get('/api/v1/group/apply/list', data)
+  return get('/admin/group/apply/list/group', data)
 }
 
 export const ServeDeleteGroupApply = data => {
   return post('/api/v1/group/apply/delete', data)
 }
 
+// 同意加群申请
 export const ServeAgreeGroupApply = data => {
-  return post('/api/v1/group/apply/agree', data)
+  return post('/admin/group/apply/handle', data)
 }
 
 // 获取群聊加群方式
@@ -91,7 +92,7 @@ export const ServeGetGroupApplySetting = data => {
 
 // 创建加群申请
 export const ServeCreateGroupApply = data => {
-  return post('/api/v1/group/apply/create', data)
+  return post('/admin/group/apply/create', data)
 }
 
 // 转让群主

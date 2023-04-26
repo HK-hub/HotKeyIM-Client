@@ -46,9 +46,10 @@ const filterSearch = computed(() => {
   })
 })
 
+// 是否群主
 const isAdmin = computed(() => {
   return items.value.some(item => {
-    return item.user_id == userStore.uid && item.leader == 2
+    return item.memberId == userStore.uid && item.memberRole == 3
   })
 })
 
@@ -77,10 +78,12 @@ const onLoadData = () => {
   })
 }
 
+// 删除群员：踢出群聊
 const onDelete = item => {
   ServeRemoveMembersGroup({
-    group_id: props.id,
-    members_ids: `${item.user_id}`,
+      operatorId: userStore.uid,
+      groupId: props.id,
+      memberIdList: [`${item.memberId}`],
   }).then(res => {
     if (res.code == 200) {
       onLoadData()
@@ -95,8 +98,9 @@ const onBatchDelete = () => {
   }
 
   ServeRemoveMembersGroup({
-    group_id: props.id,
-    members_ids: filterCheck.value.map(item => item.user_id).join(','),
+      operatorId: userStore.uid,
+      groupId: props.id,
+      memberIdList: filterCheck.value.map(item => item.memberId),
   }).then(res => {
     if (res.code == 200) {
       batchDelete.value = false
@@ -108,12 +112,12 @@ const onBatchDelete = () => {
 
 const onRowClick = item => {
   if (batchDelete.value == true) {
-    if (item.leader < 2) {
+    if (item.memberRole < 2) {
       item.is_delete = !item.is_delete
     }
   } else {
     modal(UserCardModal, {
-      uid: item.user_id,
+      uid: item.memberId,
     })
   }
 }
@@ -126,17 +130,22 @@ const onCancelDelete = () => {
   batchDelete.value = false
 }
 
+
+// 查看信息
 const onUserInfo = item => {
+
   modal(UserCardModal, {
-    uid: item.user_id,
+    uid: item.memberId,
   })
 }
 
+
+// 分配管理员权限
 const onAssignAdmin = item => {
   let title =
-    item.leader == 0
-      ? `确定要给 [${item.nickname}] 分配管理员权限吗？`
-      : `确定解除 [${item.nickname}] 管理员权限吗？`
+    item.memberRole == 1
+      ? `确定要给 [${item.memberRemarkname || item.memberUsername}] 分配管理员权限吗？`
+      : `确定解除 [${item.memberRemarkname || item.memberUsername}] 管理员权限吗？`
 
   window.$dialog.create({
     title: '温馨提示',
@@ -144,6 +153,7 @@ const onAssignAdmin = item => {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
+        // 分配管理员权限
       ServeGroupAssignAdmin({
         mode: item.leader == 0 ? 1 : 2,
         group_id: props.id,
@@ -213,7 +223,8 @@ const onForbidden = item => {
 
 // 会话列表右键显示菜单
 const onContextMenu = (e, item) => {
-  if (batchDelete.value == true || item.leader == 2) {
+    console.log('会话列表右键显示菜单:', item)
+  if (batchDelete.value == true || item.memberRole == 3) {
     return
   }
 
@@ -225,7 +236,7 @@ const onContextMenu = (e, item) => {
       key: 'info',
     },
     {
-      label: item.is_mute ? '解除禁言' : '禁止发言',
+      label: item.muted ? '解除禁言' : '禁止发言',
       key: 'forbidden',
     },
     {
@@ -241,9 +252,9 @@ const onContextMenu = (e, item) => {
   if (isAdmin.value) {
     dropdown.options.push({ label: '转让群主', key: 'transfer' })
 
-    if (item.leader == 1) {
+    if (item.memberRole == 2) {
       dropdown.options.push({ label: '管理权限(解除)', key: 'assignment' })
-    } else if (item.leader == 0) {
+    } else if (item.memberRole == 1) {
       dropdown.options.push({ label: '管理权限(分配)', key: 'assignment' })
     }
   }
@@ -313,11 +324,11 @@ onLoadData()
       <div
         class="member-item"
         v-for="member in filterSearch"
-        :key="member.user_id"
+        :key="member.memberId"
       >
         <div class="tool flex-center" v-show="batchDelete">
           <n-icon
-            v-show="member.leader < 2"
+            v-show="member.memberRole < 2"
             class="pointer"
             :size="16"
             :color="member.is_delete ? 'rgb(80 138 254)' : 'rgb(222 215 215)'"
@@ -326,7 +337,7 @@ onLoadData()
           />
         </div>
         <div class="avatar pointer" @click="onUserInfo(member)">
-          <n-avatar :size="30" :src="member.avatar" :fallback-src="defAvatar" />
+          <n-avatar :size="30" :src="member.memberAvatar" :fallback-src="defAvatar" />
         </div>
         <div
           class="content pointer o-hidden"
@@ -335,20 +346,20 @@ onLoadData()
         >
           <div class="item-title">
             <p class="nickname text-ellipsis">
-              <span>{{ member.nickname || '未设置昵称' }}</span>
-              <span v-show="member.user_card"> ({{ member.user_card }})</span>
+              <span>{{ member.memberUsername ||'未设置昵称' }}</span>
+              <span v-show="member.memberRemarkName"> ({{ member.memberRemarkName }})</span>
             </p>
             <p>
-              <span class="badge master" v-show="member.leader == 2">群主</span>
-              <span class="badge leader" v-show="member.leader == 1"
+              <span class="badge master" v-show="member.memberRole == 3">群主</span>
+              <span class="badge leader" v-show="member.memberRole == 2"
                 >管理员</span
               >
-              <span class="badge" v-show="member.is_mute == 1">已禁言</span>
+              <span class="badge" v-show="member.gagTime > new Date()">已禁言</span>
               <!-- <span class="badge qiye">企业</span> -->
             </p>
           </div>
           <div class="item-text text-ellipsis">
-            {{ member.motto || '暂无简介' }}
+            入群时间：{{ member.createTime || '暂无简介' }}
           </div>
         </div>
       </div>

@@ -61,7 +61,7 @@ const onLoadData = () => {
     ServeSearchUser({
         userId: props.uid,
     }).then(({code, data}) => {
-        console.log('search user:', data)
+        console.log('search user:', props.uid, data)
         if (code === 200) {
             state.avatar = data.miniAvatar
             state.nickname = data.username

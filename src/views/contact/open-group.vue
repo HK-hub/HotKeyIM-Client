@@ -69,6 +69,7 @@ const onInfo = item => {
 }
 
 const onToTalk = item => {
+    console.log('去群聊发消息:', item.id)
   toTalk(2, item.id)
 }
 

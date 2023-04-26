@@ -119,16 +119,20 @@ const onLoadData = () => {
     })
 }
 
+// 修改群聊基本信息
 function onSubmitBaseInfo() {
     if (modelDetail.name.trim() == '') {
         return $message.info('群名称不能为空！')
     }
 
     ServeEditGroup({
-        group_id: props.id,
-        group_name: modelDetail.name,
+        groupId: props.id,
+        groupName: modelDetail.name,
         avatar: modelDetail.avatar,
-        profile: modelDetail.profile,
+        description: modelDetail.profile,
+        category: modelDetail.categoryKey,
+        location: '',
+        tags: '',
     }).then(res => {
         if (res.code == 200) {
             $message.success('群信息更新成功！')
@@ -186,7 +190,7 @@ onMounted(() => {
 
 
                 <n-form-item label="群聊分类" required path="name">
-                    <n-select v-model:value="modelDetail.category" :options="groupCategoryOptions" placeholder="{{modelDetail.category}}"/>
+                    <n-select v-model:value="modelDetail.categoryKey" :options="groupCategoryOptions" placeholder="{{modelDetail.category}}"/>
                 </n-form-item>
 
                 <n-form-item label="群名称" required path="name">

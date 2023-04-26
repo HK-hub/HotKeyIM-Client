@@ -24,7 +24,7 @@ const editor = reactive({
 })
 
 const filterCheck = computed(() => {
-  return items.value.filter(item => item.is_delete)
+  return items.value.filter(item => item.deleted)
 })
 
 const filterSearch = computed(() => {
@@ -39,10 +39,10 @@ const filterSearch = computed(() => {
 
 const onLoadData = () => {
   ServeGetGroupNotices({
-    group_id: props.id,
+    groupId: props.id,
   }).then(res => {
     if (res.code == 200) {
-      items.value = res.data.items || []
+      items.value = res.data || []
     }
   })
 }
@@ -52,7 +52,7 @@ const onBatchDelete = () => {
     return
   }
 
-  let ids = filterCheck.value.map(item => item.user_id).join(',')
+  let ids = filterCheck.value.map(item => item.author).join(',')
 }
 
 const onRowClick = item => {
@@ -76,7 +76,7 @@ const onAdd = () => {
 
 const onCancelDelete = () => {
   items.value.forEach(item => {
-    item.is_delete = false
+    item.deleted = false
   })
 
   batchDelete.value = false
@@ -134,7 +134,7 @@ onLoadData()
               <span>{{ item.title }}</span>
             </p>
             <p>
-              <span class="date">{{ item.updated_at }}</span>
+              <span class="date">{{ item.updateTime }}</span>
             </p>
           </div>
           <div class="item-text text-ellipsis">

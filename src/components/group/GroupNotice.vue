@@ -27,7 +27,7 @@ const onMaskClick = () => {
 const onLoadData = () => {
   state.loading = true
   ServeGetGroupNotices({
-    group_id: props.groupId,
+    groupId: props.groupId,
   }).then(res => {
     if (res.code == 200) {
       let items = res.data.items || []
@@ -90,8 +90,8 @@ onLoadData()
             :size="18"
             src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
           />
-          <span class="nickname text-ellipsis">{{ item.nickname }}</span>
-          <span class="datetime">发表于 {{ item.created_at }}</span>
+          <span class="nickname text-ellipsis">{{ item.authorName }}</span>
+          <span class="datetime">发表于 {{ item.createTime }}</span>
           <span class="btn" @click="item.isShow = !item.isShow">
             <n-icon
               :size="18"

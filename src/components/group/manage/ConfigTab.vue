@@ -1,4 +1,5 @@
 <script setup>
+import {ref, reactive} from 'vue'
 import { NForm, NFormItem, NSwitch, NPopconfirm } from 'naive-ui'
 import { ServeDismissGroup } from '@/api/group'
 
@@ -8,6 +9,8 @@ const props = defineProps({
     default: 0,
   },
 })
+
+const modal = reactive({})
 
 const onDismiss = () => {
   ServeDismissGroup({
@@ -20,6 +23,10 @@ const onDismiss = () => {
     }
   })
 }
+
+
+
+
 </script>
 <template>
   <section class="section el-container is-vertical height100">
@@ -46,7 +53,7 @@ const onDismiss = () => {
           </n-popconfirm>
         </n-form-item>
         <n-form-item label="公开可见:" feedback="开启后可在公开群组列表展示。">
-          <n-switch />
+          <n-switch v-model:value="modal.public"/>
         </n-form-item>
 
         <n-form-item

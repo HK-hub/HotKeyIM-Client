@@ -180,8 +180,9 @@ class Talk extends Base {
         }
 
         ServeCreateTalkList({
-            talk_type,
-            receiver_id,
+            type: parseInt(talk_type),
+            receiverId: receiver_id,
+            userId: JSON.parse(localStorage.getItem('IM_USERID')).value
         }).then(({code, data}) => {
             console.log('加载对接节点,成功：', data)
             if (code == 200) {

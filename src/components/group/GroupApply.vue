@@ -1,6 +1,6 @@
 <script setup>
 import {ref, reactive, onMounted} from 'vue'
-import {NModal, NForm, NFormItem, NInput} from 'naive-ui'
+import {NModal, NForm, NFormItem, NInput, NSpace} from 'naive-ui'
 import {ServeCreateGroupApply, ServeGetGroupApplySetting} from '@/api/group'
 
 const remark = ref('')
@@ -10,6 +10,7 @@ const props = defineProps({
         default: 0,
     },
 })
+const userId = JSON.parse(localStorage.getItem('IM_USERID')).value
 const groupSetting = reactive({})
 const emit = defineEmits(['close'])
 
@@ -18,6 +19,7 @@ const loading = ref(false)
 const show = ref(false)
 
 const onMaskClick = () => {
+    show.value = false
     emit('close')
 }
 
@@ -26,8 +28,10 @@ const onSubmit = () => {
     loading.value = true
 
     let response = ServeCreateGroupApply({
-        group_id: props.gid,
-        remark: remark.value,
+        userId: userId,
+        groupId: props.gid,
+        applyInfo: remark.value,
+        joinType: 1,
     })
 
     response.then(res => {
@@ -75,14 +79,16 @@ onLoadData()
         >
 
             <n-form>
-                <p v-if="groupSetting.value.joinType == 3">加群申请问题：{{groupSetting.value.problem}}</p>
-                <n-form-item label="申请备注" required>
-                    <n-input
-                        placeholder="请填写申请备注"
-                        type="textarea"
-                        v-model:value="remark"
-                    />
-                </n-form-item>
+                <n-space vertical>
+                    <p v-if="groupSetting.value.joinType == 3">申请问题：{{groupSetting.value.problem}}</p>
+                    <n-form-item label="申请备注" required>
+                        <n-input
+                            placeholder="请填写申请备注"
+                            type="textarea"
+                            v-model:value="remark"
+                        />
+                    </n-form-item>
+                </n-space>
             </n-form>
 
             <template #footer>
