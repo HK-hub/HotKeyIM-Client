@@ -1,6 +1,6 @@
 <script setup>
-import {ref, reactive} from "vue";
-import {NIcon, NModal, NButton, NInput, NAvatar} from "naive-ui";
+import {ref, reactive, computed} from "vue";
+import {NIcon, NModal, NButton, NInput, NAvatar, NDropdown} from "naive-ui";
 import {
     PaperPlaneOutline,
     Add,
@@ -9,7 +9,7 @@ import {
 } from "@vicons/ionicons5";
 import {ServeSearchUser} from "@/api/contacts";
 import {toTalk} from "@/utils/talk";
-import {ServeCreateContact} from "@/api/contacts";
+import {ServeCreateContact, ServeContactGroupList} from "@/api/contacts";
 import {defAvatar} from "@/constant/default";
 
 const props = defineProps({
@@ -45,6 +45,7 @@ const state = reactive({
     account: "",
     status: 1,
     text: "",
+    groupId: '',
     totalNumbers: 0,
     currentPage: 0,
     totalPages: 0,
@@ -53,6 +54,21 @@ const state = reactive({
     rows: [],
 });
 const isOpenFrom = ref(false);
+
+// 分组信息
+const options = reactive([])
+const groupName = computed(() => {
+    console.log('分组信息:', options, state.groupId)
+    const item = options.find(item => {
+        return item.key == state.groupId
+    })
+
+    if (item) {
+        return item.label
+    }
+
+    return '未设置分组'
+})
 
 const onLoadData = () => {
 
@@ -72,12 +88,23 @@ const onLoadData = () => {
             state.remark = data.username
             state.email = data.email || ''
             state.status = data.status
+            state.groupId = data.groupId
             showModal.value = true
         } else {
             $message.info('用户信息不存在！', {showIcon: false})
         }
     })
-    showModal.value = true
+
+    // 获取好友分组列表
+    ServeContactGroupList().then(res => {
+        if (res.code == 200 && res.success) {
+            let items = res.data || []
+            for (const iter of items) {
+                options.push({ label: iter.name, key: iter.id })
+            }
+        }
+    })
+
 };
 
 // 发起会话
@@ -109,6 +136,22 @@ const onJoinContact = () => {
         }
     });
 };
+
+// 选择分组
+const handleSelectGroup = value => {
+    ServeContactMoveGroup({
+        friendId: props.uid,
+        groupId: value,
+    }).then((res) => {
+        if (res.code == 200 && res.success) {
+            state.groupId = value
+            $message.success('分组修改成功！')
+        } else {
+            $message.error(res.message)
+        }
+    })
+}
+
 
 onLoadData();
 </script>
@@ -177,7 +220,7 @@ onLoadData();
                         <div class="info-item">
                             <span class="name">备注</span>
                             <span
-                                class="text pointer"
+                                class="text edit pointer"
                                 style="display: flex; align-items: center"
                             >
                 {{ state.remark || "未设置" }}&nbsp;&nbsp;
@@ -191,6 +234,18 @@ onLoadData();
                         <div class="info-item">
                             <span class="name">手机</span>
                             <span class="text">{{ state.mobile }}</span>
+                        </div>
+                        <div class="info-item" v-if="state.status == 2">
+                            <span class="name">分组 :</span>
+                            <n-dropdown
+                                trigger="click"
+                                placement="top-start"
+                                :show-arrow="true"
+                                :options="options"
+                                @select="handleSelectGroup"
+                            >
+                                <span class="text edit pointer">{{ groupName }}</span>
+                            </n-dropdown>
                         </div>
                     </div>
                 </main>
@@ -413,6 +468,12 @@ onLoadData();
             flex: 1 auto;
             margin-left: 5px;
             color: #736f6f;
+        }
+
+        .edit {
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            text-underline-offset: 3px;
         }
     }
 }

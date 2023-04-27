@@ -97,15 +97,16 @@ export const ServeCreateGroupApply = data => {
 
 // 转让群主
 export const ServeGroupHandover = data => {
-  return post('/api/v1/group/handover', data)
+  return post('/admin/member/master/handover', data)
 }
 
 // 分配管理员
 export const ServeGroupAssignAdmin = data => {
-  return post('/api/v1/group/assign-admin', data)
+  return post('/admin/member/manage/assign', data)
 }
 
+// 禁言 or 解除禁言
 export const ServeGroupNoSpeak = data => {
-  return post('/api/v1/group/no-speak', data)
+  return post('/admin/member/forbidden/mute/state', data)
 }
 

@@ -15,6 +15,18 @@ export const ServeEditContactRemark = data => {
     return post('/api/v1/contact/edit-remark', data)
 }
 
+// 获取好友分组列表
+export const ServeContactGroupList = data => {
+    return get('/admin/friend/group/list', data)
+}
+
+// 移动好友分组
+export const ServeContactMoveGroup = data => {
+    return post('/admin/friend/modify/group', data)
+}
+
+
+
 // 搜索联系人
 export const ServeSearchContact = data => {
     return post('/admin/find/friend/account', data)

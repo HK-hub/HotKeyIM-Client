@@ -92,6 +92,7 @@ const onDelete = item => {
   })
 }
 
+// 删除群员
 const onBatchDelete = () => {
   if (!filterCheck.value.length) {
     return
@@ -155,11 +156,12 @@ const onAssignAdmin = item => {
     onPositiveClick: () => {
         // 分配管理员权限
       ServeGroupAssignAdmin({
-        mode: item.leader == 0 ? 1 : 2,
-        group_id: props.id,
-        user_id: parseInt(item.user_id),
+          operation: item.memberRole == 1 ? 1 : 0,
+          groupId: props.id,
+          puppetId: parseInt(item.memberId),
+          handlerId: userStore.uid
       }).then(res => {
-        if (res.code == 200) {
+        if (res.code == 200 && res.success) {
           $message.success('操作成功！')
           onLoadData()
         } else {
@@ -170,18 +172,19 @@ const onAssignAdmin = item => {
   })
 }
 
+// 转让群主
 const onTransfer = item => {
   window.$dialog.create({
     title: '温馨提示',
-    content: `确定把群主权限转交给 [${item.nickname}] ？`,
+    content: `确定把群主权限转交给 [${item.memberRemarkName}] ？`,
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
       ServeGroupHandover({
-        group_id: props.id,
-        user_id: parseInt(item.user_id),
+          groupId: props.id,
+          memberId: parseInt(item.memberId),
       }).then(res => {
-        if (res.code == 200) {
+        if (res.code == 200 && res.success) {
           $message.success('操作成功！')
           onLoadData()
         } else {
@@ -192,11 +195,12 @@ const onTransfer = item => {
   })
 }
 
+// 禁言 or 解除禁言
 const onForbidden = item => {
-  let content = `确定要禁言 [${item.nickname}] 此用户吗？`
+  let content = `确定要禁言 [${item.memberRemarkName}] 此用户吗？`
 
-  if (item.is_mute === 1) {
-    content = `确定要解除 [${item.nickname}] 此用户的禁言吗？`
+  if (item.muted) {
+    content = `确定要解除 [${item.memberRemarkName}] 此用户的禁言吗？`
   }
 
   window.$dialog.create({
@@ -206,9 +210,11 @@ const onForbidden = item => {
     negativeText: '取消',
     onPositiveClick: () => {
       ServeGroupNoSpeak({
-        mode: item.is_mute == 0 ? 1 : 2,
-        group_id: props.id,
-        user_id: parseInt(item.user_id),
+        mode: item.muted ? 2 : 1,
+        groupId: props.id,
+        memberId: parseInt(item.memberId),
+        handlerId: userStore.uid,
+          // forbiddenDateTime: null,
       }).then(res => {
         if (res.code == 200) {
           $message.success('操作成功！')

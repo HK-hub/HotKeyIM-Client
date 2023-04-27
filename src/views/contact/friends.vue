@@ -7,41 +7,23 @@ import MemberCard from './inner/MemberCard.vue'
 import ApplyListModal from './inner/ApplyListModal.vue'
 import UserSearchModal from './inner/UserSearchModal.vue'
 import UserFindModal from './inner/UserFindModal.vue'
+import GroupManage from './inner/GroupManage.vue'
 import {modal} from '@/utils/common'
 import {toTalk} from '@/utils/talk'
 import {useUserStore} from '@/store/user'
-import {ServeGetContacts} from '@/api/contacts'
+import {ServeGetContacts, ServeContactGroupList} from '@/api/contacts'
 
 const userStore = useUserStore()
 const isShowDrawer = ref(false)
 const isShowUserSearch = ref(false)
 const isShowUserFind = ref(false)
+const isShowGroupModal = ref(false)
+
 const keywords = ref('')
 const index = ref(0)
 const selectGroup = ref('')
 const items = ref([])
-const groups = ref([
-    {
-        id: 0,
-        name: '全部好友',
-        count: 1,
-    },
-    {
-        id: 1,
-        name: '家人',
-        count: 1,
-    },
-    {
-        id: 2,
-        name: '同事',
-        count: 1,
-    },
-    {
-        id: 3,
-        name: '朋友',
-        count: 1,
-    },
-])
+const groups = ref([])
 const filter = computed(() => {
     return items.value.filter(item => {
         console.log('select:', index, selectGroup)
@@ -83,6 +65,13 @@ const onLoadData = () => {
             groups.value = groupArray
         }
     })
+
+    ServeContactGroupList().then(res => {
+        if (res.code == 200 && res.success) {
+            groups.value = res.data || []
+        }
+    })
+
 }
 
 const onToTalk = item => {
@@ -106,6 +95,7 @@ const onToolsMenu = value => {
             break
         case 'group':
             window.$message.info('待完善...')
+            isShowGroupModal.value = true
             break
         case 'find':
             isShowUserFind.value = true
@@ -223,7 +213,11 @@ onLoadData()
     <!-- 用户查询模态框 -->
     <UserSearchModal v-model:show="isShowUserSearch"/>
 
+    <!-- 用户查找 -->
     <UserFindModal v-model:show="isShowUserFind"/>
+
+    <!-- 分组管理 -->
+    <GroupManage v-if="isShowGroupModal" @close="isShowGroupModal = false" />
 
 </template>
 
