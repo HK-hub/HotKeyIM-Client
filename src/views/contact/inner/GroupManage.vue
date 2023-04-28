@@ -8,7 +8,7 @@ import {
     NTooltip,
 } from 'naive-ui'
 import { RemoveCircleOutline, ArrowDown, ArrowUp } from '@vicons/ionicons5'
-import {ServeContactGroupList} from '@/api/contacts'
+import {ServeContactGroupList, ServeEditContactGroup} from '@/api/contacts'
 
 const emit = defineEmits(['close', 'submit'])
 
@@ -26,17 +26,25 @@ const onMaskClick = () => {
 
 const onSubmit = () => {
     let data = {
-        title: model.title,
-        mode: model.mode,
-        anonymous: model.anonymous,
-        options: model.options.map(item => item.name),
+        // userId: userId,
+        friendGroupList: model.options,
     }
-
-    emit('submit', data)
+    // 编辑分组
+    ServeEditContactGroup(data).then(res => {
+        if (res.code == 200 && res.success) {
+            $message.success('操作成功!')
+            onLoadData()
+        }
+    })
+    // emit('submit', data)
 }
 
 const addOption = () => {
-    model.options.push({ name: '' })
+    model.options.push({
+        count: 0,
+        id: 0,
+        name: '',
+    })
 }
 
 

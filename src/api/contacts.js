@@ -25,7 +25,10 @@ export const ServeContactMoveGroup = data => {
     return post('/admin/friend/modify/group', data)
 }
 
-
+// 编辑好友分组
+export const ServeEditContactGroup = data => {
+    return post('/admin/grouping/edit', data)
+}
 
 // 搜索联系人
 export const ServeSearchContact = data => {

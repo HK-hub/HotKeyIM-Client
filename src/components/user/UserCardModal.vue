@@ -9,7 +9,7 @@ import {
 } from "@vicons/ionicons5";
 import {ServeSearchUser} from "@/api/contacts";
 import {toTalk} from "@/utils/talk";
-import {ServeCreateContact, ServeContactGroupList} from "@/api/contacts";
+import {ServeCreateContact, ServeContactGroupList, ServeContactMoveGroup} from "@/api/contacts";
 import {defAvatar} from "@/constant/default";
 
 const props = defineProps({

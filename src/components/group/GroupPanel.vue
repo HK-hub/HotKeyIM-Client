@@ -231,7 +231,7 @@ loadMembers()
                         <div class="title">群简介：</div>
                     </div>
                     <div class="describe">
-                        {{ state.detail.announcement ? state.detail.announcement : '暂无群公告' }}
+                        {{ state.detail.profile ? state.detail.profile : '暂无群简介' }}
                     </div>
                 </div>
 
@@ -242,7 +242,9 @@ loadMembers()
                             <n-button type="info" text> 更多</n-button>
                         </div>
                     </div>
-                    <div class="describe">{{ state.detail.profile ? state.detail.profile : '暂无群简介' }}</div>
+                    <div class="describe">
+                        {{ state.detail.announcement ? state.detail.announcement : '暂无群公告' }}
+                    </div>
                 </div>
             </div>
 
