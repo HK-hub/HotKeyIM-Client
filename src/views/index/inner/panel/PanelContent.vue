@@ -342,9 +342,9 @@ onMounted(() => {
                     <revoke-message
                         :login_uid="uid"
                         :user_id="item.senderId"
-                        :nickname="item.extra.username"
+                        :nickname="item.friendRemark"
                         :talk_type="item.chatType"
-                        :datetime="item.extra.createTime"
+                        :datetime="item.updateTime"
                     />
                 </div>
 
