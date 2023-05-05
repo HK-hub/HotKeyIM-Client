@@ -91,7 +91,7 @@ export const ServeForwardRecords = data => {
 
 // 撤回消息服务接口
 export const ServeRevokeRecords = data => {
-  return post('/api/v1/talk/message/revoke', data)
+  return post('/admin/message/revoke/message', data)
 }
 
 // 删除消息服务接口

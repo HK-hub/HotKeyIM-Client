@@ -8,6 +8,7 @@ import EventTalk from './event/socket/talk'
 import EventConversation from './event/socket/conversation'
 import EventKeyboard from './event/socket/keyboard'
 import EventLogin from './event/socket/login'
+import EventRevoke from './event/socket/revoke'
 import {NAvatar} from 'naive-ui'
 import {notifyIcon} from '@/constant/default'
 
@@ -111,8 +112,7 @@ class Socket {
         this.socket.on('event_talk_keyboard', data => new EventKeyboard(data))
 
         // 消息撤回事件
-        this.socket.on('event_talk_revoke', data => {
-        })
+        this.socket.on('event_talk_revoke', data => new EventRevoke(data))
 
         // 好友申请事件
         this.socket.on('event_contact_apply', data => {

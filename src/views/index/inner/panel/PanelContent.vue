@@ -206,7 +206,7 @@ const onDeleteTalk = data => {
 
 // 撤销对话消息
 const onRevokeTalk = data => {
-    dialogueStore.ApiRevokeRecord(data.id)
+    dialogueStore.ApiRevokeRecord(data.messageId)
 }
 
 // 多选事件
@@ -338,13 +338,13 @@ onMounted(() => {
                 </div>
 
                 <!-- 撤回消息 -->
-                <div v-else-if="item.is_revoke == 1" class="message-box">
+                <div v-else-if="item.revoke == true" class="message-box">
                     <revoke-message
                         :login_uid="uid"
-                        :user_id="item.user_id"
-                        :nickname="item.nickname"
-                        :talk_type="item.talk_type"
-                        :datetime="item.created_at"
+                        :user_id="item.senderId"
+                        :nickname="item.extra.username"
+                        :talk_type="item.chatType"
+                        :datetime="item.extra.createTime"
                     />
                 </div>
 

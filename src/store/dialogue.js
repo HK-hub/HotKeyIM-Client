@@ -158,11 +158,13 @@ export const useDialogueStore = defineStore('dialogue', {
 
     // 撤销聊天记录
     ApiRevokeRecord(record_id) {
-      ServeRevokeRecords({ record_id }).then(res => {
-        if (res.code == 200) {
-          this.updateDialogueRecord({ id: record_id, is_revoke: 1 })
+      ServeRevokeRecords({
+        messageId: record_id,
+      }).then(res => {
+        if (res.code == 200 && res.success) {
+          this.updateDialogueRecord({ id: record_id, revoke: true })
         } else {
-          $message.warning(res.message)
+          $message.warning(res.message || res.data)
         }
       })
     },
