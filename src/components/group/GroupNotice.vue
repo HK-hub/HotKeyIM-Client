@@ -30,7 +30,7 @@ const onLoadData = () => {
     groupId: props.groupId,
   }).then(res => {
     if (res.code == 200) {
-      let items = res.data.items || []
+      let items = res.data || []
 
       items.forEach(item => {
         item.isShow = false
@@ -88,7 +88,7 @@ onLoadData()
           <n-avatar
             round
             :size="18"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            :src="item.avatar"
           />
           <span class="nickname text-ellipsis">{{ item.authorName }}</span>
           <span class="datetime">发表于 {{ item.createTime }}</span>
