@@ -1,3 +1,4 @@
+
 <script setup>
 import { useEditorStore } from '@/store/editor'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'

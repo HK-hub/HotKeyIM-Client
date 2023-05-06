@@ -148,7 +148,7 @@ const onSendLocationEvent = ({data, callBack}) => {
     // data: 经纬度：latitude，longitude
     console.log('onSendLocationEvent: 发送位置消息：', data)
 
-    // 发送文本消息
+    // 发送位置消息
     ServeSendLocation({
         senderId: userId,
         receiverId: props.receiver_id,
