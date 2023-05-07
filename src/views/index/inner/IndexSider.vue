@@ -140,16 +140,17 @@ const onRemoveTalk = data => {
 // 设置消息免打扰
 const onSetDisturb = data => {
     ServeSetNotDisturb({
-        talk_type: data.talk_type,
-        receiver_id: data.receiver_id,
-        is_disturb: data.is_disturb == 0 ? 1 : 0,
+        talkId: data.id,
+        talkType: data.talkType,
+        receiverId: data.receiverId,
+        disturb: data.disturb == 0 ? 1 : 0,
     }).then(res => {
-        if (res.code == 200) {
+        if (res.code == 200 && res.success) {
             $message.success('设置成功!')
 
             talkStore.updateItem({
                 index_name: data.index_name,
-                is_disturb: data.is_disturb == 0 ? 1 : 0,
+                disturb: data.disturb == 0 ? 1 : 0,
             })
         } else {
             $message.error(res.message)
