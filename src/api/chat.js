@@ -12,7 +12,7 @@ export const ServeCreateTalkList = data => {
 
 // 删除聊天列表服务接口
 export const ServeDeleteTalkList = data => {
-  return post('/api/v1/talk/delete', data)
+  return post('/admin/talk/remove', data)
 }
 
 // 对话列表置顶服务接口

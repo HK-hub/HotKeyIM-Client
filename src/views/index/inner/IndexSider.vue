@@ -129,9 +129,9 @@ const onUserInfo = data => {
 // 移除会话
 const onRemoveTalk = data => {
     ServeDeleteTalkList({
-        list_id: data.id,
-    }).then(({code}) => {
-        if (code == 200) {
+        talkId: data.id,
+    }).then(res => {
+        if (res.code == 200 && res.success) {
             onDeleteTalk(data.index_name)
         }
     })
