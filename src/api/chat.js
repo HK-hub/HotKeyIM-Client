@@ -101,7 +101,7 @@ export const ServeRemoveRecords = data => {
 
 // 收藏表情包服务接口
 export const ServeCollectEmoticon = data => {
-  return post('/api/v1/talk/message/collect', data)
+  return post('/admin/emoticon/collect', data)
 }
 
 // 投票消息

@@ -1,7 +1,7 @@
 <script setup>
-import {reactive, ref} from 'vue'
+import {reactive, ref, h} from 'vue'
 import {useRouter} from 'vue-router'
-import {NForm, NFormItem, NInput, NSelect, NDatePicker} from 'naive-ui'
+import {NForm, NFormItem, NInput, NSelect, NDatePicker, NTag, NDynamicTags} from 'naive-ui'
 import {ServeUpdateUserDetail, ServeGetUserDetail} from '@/api/user'
 import {GenderOptions} from '@/constant/default'
 import AvatarCropper from '@/components/base/AvatarCropper.vue'
@@ -10,6 +10,29 @@ import {hidePhone} from '@/utils/strings'
 const router = useRouter()
 const cropper = ref(false)
 const userId = JSON.parse(localStorage.getItem('IM_USERID')).value
+const myTags = ref([
+    {
+        label: '教师',
+        value: '1'
+    },
+    {
+        label: '程序员',
+        value: '2'
+    },
+    {
+        label: '程序员',
+        value: '3'
+    },
+    {
+        label: '程序员',
+        value: '4'
+    },
+    {
+        label: '计算机编程',
+        value: '5'
+    },
+]);
+
 const detail = reactive({
     account: '',
     avatar: '',
@@ -72,6 +95,30 @@ const onUploadAvatar = avatar => {
     console.log('上传头像成功,新的头像为：', avatar)
     detail.avatar = avatar + '?t=' + Date.now()
     console.log('detail 详细信息：',detail)
+}
+
+const renderTag = (tag, index) => {
+    return h(
+        NTag,
+        {
+            type: index < 3 ? "success" : "error",
+            closable: true,
+            onClose: () => {
+                myTags.value.splice(index, 1);
+            }
+        },
+        {
+            default: () => tag.label
+        }
+    );
+}
+
+// 创建标签
+const handleCreate = (label) => {
+    return {
+        label,
+        value: "v" + label
+    };
 }
 </script>
 
@@ -153,6 +200,9 @@ const onUploadAvatar = avatar => {
                         value-format="yyyy-MM-dd"
                     />
                 </n-form-item>
+                <n-form-item label="个人标签：">
+                    <n-dynamic-tags v-model:value="myTags" :render-tag="renderTag" :max="5" @create="handleCreate"/>
+                </n-form-item>
                 <n-form-item label="个性签名：">
                     <n-input
                         placeholder="关于我的"
@@ -166,7 +216,6 @@ const onUploadAvatar = avatar => {
             }"
                     />
                 </n-form-item>
-
                 <n-form-item>
                     <n-button
                         type="primary"

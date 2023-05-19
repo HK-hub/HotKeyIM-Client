@@ -187,7 +187,7 @@ loadChatRecord()
                 {{ item.nickname_remarks || item.nickname }}
               </span>
 
-                            <span class="time"> {{ item.created_at }}</span>
+                            <span class="time"> {{ item.createTime }}</span>
                         </div>
 
                         <!-- 文本消息 -->

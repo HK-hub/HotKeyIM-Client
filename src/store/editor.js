@@ -78,7 +78,7 @@ export const useEditorStore = defineStore('editor', {
     // 收藏用户表情包
     saveUserEmoticon(resoure) {
       ServeCollectEmoticon({
-        record_id: resoure.record_id,
+        recordId: resoure.record_id,
       }).then(res => {
         if (res.code == 200) {
           this.loadUserEmoticon()
