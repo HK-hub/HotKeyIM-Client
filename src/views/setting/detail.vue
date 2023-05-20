@@ -2,7 +2,8 @@
 import {reactive, ref, h} from 'vue'
 import {useRouter} from 'vue-router'
 import {NForm, NFormItem, NInput, NSelect, NDatePicker, NTag, NDynamicTags} from 'naive-ui'
-import {ServeUpdateUserDetail, ServeGetUserDetail} from '@/api/user'
+import {ServeUpdateUserDetail, ServeGetUserDetail, ServeGetPersonalTag,
+    ServeCreatePersonalTag, ServeRemovePersonalTag} from '@/api/user'
 import {GenderOptions} from '@/constant/default'
 import AvatarCropper from '@/components/base/AvatarCropper.vue'
 import {hidePhone} from '@/utils/strings'
@@ -61,6 +62,18 @@ ServeGetUserDetail({userId: userId}).then(res => {
     console.log('用户详细信息：',detail)
 })
 
+// 加载个人标签
+ServeGetPersonalTag().then(res => {
+    if (res.code == 200 && res.success) {
+        myTags.value = res.data.map(tag => {
+            return {
+                label: tag.name,
+                value: tag.id
+            }
+        });
+    }
+})
+
 // 修改用户信息
 const onChangeDetail = () => {
     if (!detail.nickname) {
@@ -98,13 +111,27 @@ const onUploadAvatar = avatar => {
 }
 
 const renderTag = (tag, index) => {
+    console.log('读取的tag:', tag, index)
+
+    if (tag instanceof Promise) {
+        return;
+    }
     return h(
         NTag,
         {
-            type: index < 3 ? "success" : "error",
+            type: ["success", "error", "warning", "info"][Math.floor(Math.random() * 4)],
             closable: true,
             onClose: () => {
-                myTags.value.splice(index, 1);
+                ServeRemovePersonalTag({
+                    id: tag.value,
+                    name: tag.label
+                }).then(res => {
+                    if (res.code == 200 && res.success) {
+                        myTags.value.splice(index, 1);
+                    } else {
+                        $message.warning(result.message);
+                    }
+                })
             }
         },
         {
@@ -114,11 +141,27 @@ const renderTag = (tag, index) => {
 }
 
 // 创建标签
-const handleCreate = (label) => {
-    return {
-        label,
-        value: "v" + label
-    };
+const handleCreate = async (label) => {
+
+    // 创建
+    let result = await ServeCreatePersonalTag({
+        name: label,
+        description: label,
+    })
+    console.log(result)
+    if (result.code == 200 && result.success) {
+        // 添加成功
+        console.log('添加成功：', label, result)
+        if(myTags.value.slice(-1)[0] instanceof Promise){
+            myTags.value.pop()
+        }
+        myTags.value.push({
+            label: label,
+            value: result.data.id
+        })
+    } else {
+        $message.warning(result.message);
+    }
 }
 </script>
 
@@ -201,7 +244,7 @@ const handleCreate = (label) => {
                     />
                 </n-form-item>
                 <n-form-item label="个人标签：">
-                    <n-dynamic-tags v-model:value="myTags" :render-tag="renderTag" :max="5" @create="handleCreate"/>
+                    <n-dynamic-tags v-model:value="myTags" :render-tag="renderTag" :max="8" @create="handleCreate"/>
                 </n-form-item>
                 <n-form-item label="个性签名：">
                     <n-input

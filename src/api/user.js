@@ -25,6 +25,22 @@ export const ServeGetUserDetail = (data) => {
     return get('/admin/info/detail', data)
 }
 
+// 查询用户个人标签服务接口
+export const ServeGetPersonalTag = () => {
+    return get('/admin/personal/tag/list')
+}
+
+// 创建用户个人标签
+export const ServeCreatePersonalTag = (data) => {
+    return post('/admin/personal/tag/create', data)
+}
+
+// 删除用户个人标签
+export const ServeRemovePersonalTag = (data) => {
+    return post('/admin/personal/tag/delete', data)
+}
+
+
 // 查询用户profile服务接口
 export const ServeGetUserProfile = (data) => {
     return get('/admin/user/profile', data)
